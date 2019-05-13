@@ -124,7 +124,8 @@ public class projekt_gui_main  {
                 pathAdd.setEditable(false);
                 JTextArea authorAdd = new JTextArea("insert author");
                 JTextArea tagsAdd = new JTextArea("insert tags");
-                JTextArea dateAdd = new JTextArea("insert date");
+                JTextArea dateAdd = new JTextArea("dd.mm.yyyy");
+
                 JTextArea placeAdd = new JTextArea("insert place");
                 JPanel textAreasLabel = new JPanel();
                 textAreasLabel.add(pathAdd);
@@ -135,7 +136,11 @@ public class projekt_gui_main  {
                 addImageWindow.add(textAreasLabel);
                 textAreasLabel.setLayout(new GridLayout(6,1));
                 JButton addButton = new JButton("Add");
+
+
                 addButton.addActionListener(t->{
+                    System.out.println(dateAdd.toString());
+                    if(isApropriateDate(dateAdd)){
                     Photo newPhoto = new Photo();
                     newPhoto.setAuthor( authorAdd.getText());
                     newPhoto.setDate(dateAdd.getText());
@@ -170,7 +175,7 @@ public class projekt_gui_main  {
                         gridphots.revalidate();
                         gridphots.repaint();
                     }
-                });
+                }});
                 textAreasLabel.add(addButton);
                 addImageWindow.pack();
                 addImageWindow.setDefaultCloseOperation(addImageWindow.DISPOSE_ON_CLOSE);
@@ -218,7 +223,15 @@ public class projekt_gui_main  {
         mainFrame.setVisible(true);
 
     }
+public static Boolean isApropriateDate (JTextArea date){
+        String dat = date.getText();
+        Pattern datepat = Pattern.compile("([123]?[0-9])-([1]?[0-9])-([0-9]{4})");
+        Matcher datematch = datepat.matcher(dat);
+        if (datematch.find()){
+            return  true;
+        } else return false;
 
+}
 
 
     public static void main(String[] args) {
