@@ -1,3 +1,5 @@
+import javafx.stage.FileChooser;
+
 import javax.swing.*;
 import javax.swing.JFrame;
 import java.awt.*;
@@ -111,18 +113,79 @@ public class projekt_gui_main  {
                 }
             }
         });
+        addItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P,ActionEvent.CTRL_MASK));
+        addItem.addActionListener(h->{
+            JFileChooser selectPhoto = new JFileChooser();
+            int code = selectPhoto.showOpenDialog(mainFrame);
+            if (code == JFileChooser.APPROVE_OPTION) {
+                String path = selectPhoto.getSelectedFile().getPath();
+                JFrame addImageWindow = new JFrame();
+                JTextArea pathAdd= new JTextArea(path);
+                pathAdd.setEditable(false);
+                JTextArea authorAdd = new JTextArea("insert author");
+                JTextArea tagsAdd = new JTextArea("insert tags");
+                JTextArea dateAdd = new JTextArea("insert date");
+                JTextArea placeAdd = new JTextArea("insert place");
+                JPanel textAreasLabel = new JPanel();
+                textAreasLabel.add(pathAdd);
+                textAreasLabel.add(authorAdd);
+                textAreasLabel.add(tagsAdd);
+                textAreasLabel.add(dateAdd);
+                textAreasLabel.add(placeAdd);
+                addImageWindow.add(textAreasLabel);
+                textAreasLabel.setLayout(new GridLayout(6,1));
+                JButton addButton = new JButton("Add");
+                addButton.addActionListener(t->{
+                    Photo newPhoto = new Photo();
+                    newPhoto.setAuthor( authorAdd.getText());
+                    newPhoto.setDate(dateAdd.getText());
+                    newPhoto.setPath(pathAdd.getText());
+                    newPhoto.setTags(tagsAdd.getText());
+                    newPhoto.setPlace(placeAdd.getText());
+                    photos.add(newPhoto);
+                    gridphots.removeAll();
+                    for(int i=0;i<photos.size();i++){
+                        JButton[]tab = new JButton[photos.size()];
+                        tab[i] = new JButton();
+                        ImageIcon img = new ImageIcon(photos.get(i).getPath());
+                        Image scaleImage = img.getImage().getScaledInstance(winDim10.width-50,100,Image.SCALE_DEFAULT);
+                        tab[i].setIcon(new ImageIcon(scaleImage));
+                        gridphots.add(tab[i]);
+                        System.out.println(photos.get(i).getPath());
+                        gridphots.setLayout(new GridLayout(tab.length/2+1,2));
+                        int m =i;
+
+                        tab[i].addActionListener(a->{
+                            ImageIcon clickedimage =  new ImageIcon(photos.get(m).getPath());
+                            Image scaleclicked = clickedimage.getImage().getScaledInstance(winDim2.width,winDim2.height,Image.SCALE_DEFAULT);
+                            System.out.println("click"+m+photos.get(m).getPath());
+                            author.setText(photos.get(m).getAuthor());
+                            tags.setText(photos.get(m).getTags());
+                            place.setText(photos.get(m).getPlace());
+                            date.setText(photos.get(m).getDate());
+                            centerlabel.setIcon(new ImageIcon(scaleclicked));
+                            centerpanel.revalidate();
+                            centerpanel.repaint();
+                        });
+                        gridphots.revalidate();
+                        gridphots.repaint();
+                    }
+                });
+                textAreasLabel.add(addButton);
+                addImageWindow.pack();
+                addImageWindow.setDefaultCloseOperation(addImageWindow.DISPOSE_ON_CLOSE);
+                addImageWindow.setVisible(true);
+            }
+        });
 
         centerlabel.setBackground(Color.BLACK);
         centerpanel.setBackground(Color.BLUE);
         centerpanel.add(centerlabel);
 
-
-
         borderphotos.setLayout(new BorderLayout());
         borderphotos.add(centerpanel,BorderLayout.CENTER);
 
         righttextpanel.setLayout(new GridLayout(4,1));
-
 
         author.setEditable(false);
         tags.setEditable(false);
@@ -167,4 +230,6 @@ public class projekt_gui_main  {
             }
         });
     }
+
 }
+
