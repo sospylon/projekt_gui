@@ -70,7 +70,7 @@ public class Photo {
             this.place = divided[4];
         }
         else {
-            JOptionPane.showMessageDialog(null, "wrong extension");
+            JOptionPane.showMessageDialog(null, "wrong image extension");
 
         }
         /*

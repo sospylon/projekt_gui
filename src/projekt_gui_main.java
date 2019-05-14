@@ -64,55 +64,34 @@ public class projekt_gui_main  {
             if (code == JFileChooser.APPROVE_OPTION) {
                 gridphots.removeAll();
                 String path = fileChooser.getSelectedFile().getPath();
-                File file = new File(path);
-                try {
-                    Scanner scan = new Scanner(file);
-                    while (scan.hasNextLine()) {
-                        String dat = scan.nextLine();
-                        System.out.println(dat);
-                        String[] divided = dat.split(";");
-                        Pattern check = Pattern.compile(".*\\.jpg\\b|.*\\.png\\b");
-                        Matcher regexMatcher = check.matcher(divided[0]);
-                        if(regexMatcher.find()) {
-                            photos.add(new Photo(dat));
-                            data.add(dat);
-                        } else {
-                            System.out.println("nullllllllllllllllllllllllllllllllllllllll");
-                            JOptionPane.showMessageDialog(null, "wrong extension for "+ divided[0] );
+                Pattern checkdatabase = Pattern.compile(".*\\.txt\\b");
+                Matcher matchdatabase = checkdatabase.matcher(path);
+                if (matchdatabase.find()) {
+                    File file = new File(path);
+                    try {
+                        Scanner scan = new Scanner(file);
+                        while (scan.hasNextLine()) {
+                            String dat = scan.nextLine();
+                            System.out.println(dat);
+                            String[] divided = dat.split(";");
+                            Pattern check = Pattern.compile(".*\\.jpg\\b|.*\\.png\\b");
+                            Matcher regexMatcher = check.matcher(divided[0]);
+                            if (regexMatcher.find()) {
+                                photos.add(new Photo(dat));
+                                data.add(dat);
+                            } else {
+                                System.out.println("nullllllllllllllllllllllllllllllllllllllll");
+                                JOptionPane.showMessageDialog(null, "wrong extension for " + divided[0]);
+                            }
                         }
-                        }
-                } catch (FileNotFoundException a) {
-                    System.out.println("file not found");
-                }
-                photos.get(0).show();
-                for(int i=0;i<photos.size();i++){
-                    JButton[]tab = new JButton[photos.size()];
-                    tab[i] = new JButton();
-                    ImageIcon img = new ImageIcon(photos.get(i).getPath());
-                    Image scaleImage = img.getImage().getScaledInstance(winDim10.width-50,100,Image.SCALE_DEFAULT);
-                    tab[i].setIcon(new ImageIcon(scaleImage));
-                    gridphots.add(tab[i]);
-                    System.out.println(photos.get(i).getPath());
-                    gridphots.setLayout(new GridLayout(tab.length/2+1,2));
-                    int m =i;
-
-                    tab[i].addActionListener(a->{
-                        ImageIcon clickedimage =  new ImageIcon(photos.get(m).getPath());
-                        Image scaleclicked = clickedimage.getImage().getScaledInstance(winDim2.width,winDim2.height,Image.SCALE_DEFAULT);
-                        System.out.println("click"+m+photos.get(m).getPath());
-                        author.setText(photos.get(m).getAuthor());
-                        tags.setText(photos.get(m).getTags());
-                        place.setText(photos.get(m).getPlace());
-                        date.setText(photos.get(m).getDate());
-                        centerlabel.setIcon(new ImageIcon(scaleclicked));
-                        centerpanel.revalidate();
-                        centerpanel.repaint();
-                    });
-                    gridphots.revalidate();
-                    gridphots.repaint();
-                }
+                    } catch (FileNotFoundException a) {
+                        System.out.println("file not found");
+                    }
+                    photos.get(0).show();
+                    recreatebuttons(winDim10, winDim2, centerlabel, centerpanel, gridphots, author, date, tags, place, photos);
+                } else JOptionPane.showMessageDialog(null, "wrong database extension");
             }
-        });
+            });
         addItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P,ActionEvent.CTRL_MASK));
         addItem.addActionListener(h->{
             JFileChooser selectPhoto = new JFileChooser();
@@ -124,7 +103,7 @@ public class projekt_gui_main  {
                 pathAdd.setEditable(false);
                 JTextArea authorAdd = new JTextArea("insert author");
                 JTextArea tagsAdd = new JTextArea("insert tags");
-                JTextArea dateAdd = new JTextArea("dd.mm.yyyy");
+                JTextArea dateAdd = new JTextArea("dd-mm-yyyy");
 
                 JTextArea placeAdd = new JTextArea("insert place");
                 JPanel textAreasLabel = new JPanel();
@@ -149,33 +128,9 @@ public class projekt_gui_main  {
                     newPhoto.setPlace(placeAdd.getText());
                     photos.add(newPhoto);
                     gridphots.removeAll();
-                    for(int i=0;i<photos.size();i++){
-                        JButton[]tab = new JButton[photos.size()];
-                        tab[i] = new JButton();
-                        ImageIcon img = new ImageIcon(photos.get(i).getPath());
-                        Image scaleImage = img.getImage().getScaledInstance(winDim10.width-50,100,Image.SCALE_DEFAULT);
-                        tab[i].setIcon(new ImageIcon(scaleImage));
-                        gridphots.add(tab[i]);
-                        System.out.println(photos.get(i).getPath());
-                        gridphots.setLayout(new GridLayout(tab.length/2+1,2));
-                        int m =i;
-
-                        tab[i].addActionListener(a->{
-                            ImageIcon clickedimage =  new ImageIcon(photos.get(m).getPath());
-                            Image scaleclicked = clickedimage.getImage().getScaledInstance(winDim2.width,winDim2.height,Image.SCALE_DEFAULT);
-                            System.out.println("click"+m+photos.get(m).getPath());
-                            author.setText(photos.get(m).getAuthor());
-                            tags.setText(photos.get(m).getTags());
-                            place.setText(photos.get(m).getPlace());
-                            date.setText(photos.get(m).getDate());
-                            centerlabel.setIcon(new ImageIcon(scaleclicked));
-                            centerpanel.revalidate();
-                            centerpanel.repaint();
-                        });
-                        gridphots.revalidate();
-                        gridphots.repaint();
-                    }
-                }});
+                        recreatebuttons(winDim10, winDim2, centerlabel, centerpanel, gridphots, author, date, tags, place, photos);
+                    } else JOptionPane.showMessageDialog(null, "incorrect date format, please insert dd-mm-yyyy");
+                });
                 textAreasLabel.add(addButton);
                 addImageWindow.pack();
                 addImageWindow.setDefaultCloseOperation(addImageWindow.DISPOSE_ON_CLOSE);
@@ -223,9 +178,39 @@ public class projekt_gui_main  {
         mainFrame.setVisible(true);
 
     }
-public static Boolean isApropriateDate (JTextArea date){
+
+    private static void recreatebuttons(Dimension winDim10, Dimension winDim2, JLabel centerlabel, JPanel centerpanel, JPanel gridphots, JTextArea author, JTextPane date, JTextArea tags, JTextPane place, ArrayList<Photo> photos) {
+        for(int i=0;i<photos.size();i++){
+            JButton[]tab = new JButton[photos.size()];
+            tab[i] = new JButton();
+            ImageIcon img = new ImageIcon(photos.get(i).getPath());
+            Image scaleImage = img.getImage().getScaledInstance(winDim10.width-50,100,Image.SCALE_DEFAULT);
+            tab[i].setIcon(new ImageIcon(scaleImage));
+            gridphots.add(tab[i]);
+            System.out.println(photos.get(i).getPath());
+            gridphots.setLayout(new GridLayout(tab.length/2+1,2));
+            int m =i;
+
+            tab[i].addActionListener(a->{
+                ImageIcon clickedimage =  new ImageIcon(photos.get(m).getPath());
+                Image scaleclicked = clickedimage.getImage().getScaledInstance(winDim2.width,winDim2.height,Image.SCALE_DEFAULT);
+                System.out.println("click"+m+photos.get(m).getPath());
+                author.setText(photos.get(m).getAuthor());
+                tags.setText(photos.get(m).getTags());
+                place.setText(photos.get(m).getPlace());
+                date.setText(photos.get(m).getDate());
+                centerlabel.setIcon(new ImageIcon(scaleclicked));
+                centerpanel.revalidate();
+                centerpanel.repaint();
+            });
+            gridphots.revalidate();
+            gridphots.repaint();
+        }
+    }
+
+    public static Boolean isApropriateDate (JTextArea date){
         String dat = date.getText();
-        Pattern datepat = Pattern.compile("([123]?[0-9])-([1]?[0-9])-([0-9]{4})");
+        Pattern datepat = Pattern.compile("([12]?[0-9]|[3][01])-([0]?[0-9]|[1][012])-([0-9]{4})");
         Matcher datematch = datepat.matcher(dat);
         if (datematch.find()){
             return  true;
