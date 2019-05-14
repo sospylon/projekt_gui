@@ -1,4 +1,4 @@
-import javafx.stage.FileChooser;
+
 
 import javax.swing.*;
 import javax.swing.JFrame;
@@ -10,6 +10,8 @@ import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -52,7 +54,17 @@ public class projekt_gui_main  {
 
         tags.setWrapStyleWord(true);
         JMenuItem addItem = new JMenuItem("Add Photo");
+
         JMenuItem openFileItem = new JMenuItem("Open library");
+        JMenuItem sortbyDate = new JMenuItem("date");
+        JMenuItem sortbyAuthor = new JMenuItem("author");
+        JMenuItem sortbyPlace = new JMenuItem("place");
+
+
+        JMenuItem revsortbyDate = new JMenuItem("date");
+        JMenuItem revsortbyAuthor = new JMenuItem("author");
+        JMenuItem revsortbyPlace = new JMenuItem("place");
+
         JFileChooser fileChooser = new JFileChooser();
         ArrayList data = new ArrayList();
         ArrayList<Photo> photos = new ArrayList<Photo>();
@@ -137,7 +149,69 @@ public class projekt_gui_main  {
                 addImageWindow.setVisible(true);
             }
         });
-
+        sortbyAuthor.addActionListener(auth ->{
+            Collections.sort(photos, new Comparator<Photo>() {
+                @Override
+                public int compare(Photo o1, Photo o2) {
+                    return o1.getAuthor().compareTo(o2.getAuthor());
+                }
+            });
+            gridphots.removeAll();
+            recreatebuttons(winDim10, winDim2, centerlabel, centerpanel, gridphots, author, date, tags, place, photos);
+        });
+        sortbyDate.addActionListener(auth ->{
+            Collections.sort(photos, new Comparator<Photo>() {
+                @Override
+                public int compare(Photo o1, Photo o2) {
+                    return o1.getDate().compareTo(o2.getDate());
+                }
+            });
+            gridphots.removeAll();
+            recreatebuttons(winDim10, winDim2, centerlabel, centerpanel, gridphots, author, date, tags, place, photos);
+        });
+        sortbyPlace.addActionListener(auth ->{
+            Collections.sort(photos, new Comparator<Photo>() {
+                @Override
+                public int compare(Photo o1, Photo o2) {
+                    return o1.getPlace().compareTo(o2.getPlace());
+                }
+            });
+            gridphots.removeAll();
+            recreatebuttons(winDim10, winDim2, centerlabel, centerpanel, gridphots, author, date, tags, place, photos);
+        });
+        revsortbyAuthor.addActionListener(auth ->{
+            Collections.sort(photos, new Comparator<Photo>() {
+                @Override
+                public int compare(Photo o1, Photo o2) {
+                    return o1.getAuthor().compareTo(o2.getAuthor());
+                }
+            });
+            Collections.reverse(photos);
+            gridphots.removeAll();
+            recreatebuttons(winDim10, winDim2, centerlabel, centerpanel, gridphots, author, date, tags, place, photos);
+        });
+        revsortbyDate.addActionListener(auth ->{
+            Collections.sort(photos, new Comparator<Photo>() {
+                @Override
+                public int compare(Photo o1, Photo o2) {
+                    return o1.getDate().compareTo(o2.getDate());
+                }
+            });
+            Collections.reverse(photos);
+            gridphots.removeAll();
+            recreatebuttons(winDim10, winDim2, centerlabel, centerpanel, gridphots, author, date, tags, place, photos);
+        });
+        revsortbyPlace.addActionListener(auth ->{
+            Collections.sort(photos, new Comparator<Photo>() {
+                @Override
+                public int compare(Photo o1, Photo o2) {
+                    return o1.getPlace().compareTo(o2.getPlace());
+                }
+            });
+            Collections.reverse(photos);
+            gridphots.removeAll();
+            recreatebuttons(winDim10, winDim2, centerlabel, centerpanel, gridphots, author, date, tags, place, photos);
+        });
         centerlabel.setBackground(Color.BLACK);
         centerpanel.setBackground(Color.BLUE);
         centerpanel.add(centerlabel);
@@ -165,11 +239,25 @@ public class projekt_gui_main  {
         mainFrame.add(borderphotos);
         mainFrame.setVisible(true);
 
-       JMenu fileMenu = new JMenu("file");
+        JMenu sortBy = new JMenu("sort by");
+        sortBy.add(sortbyAuthor);
+        sortBy.add(sortbyDate);
+        sortBy.add(sortbyPlace);
+
+        JMenu reversesortBy = new JMenu("reverse sort by");
+        reversesortBy.add(revsortbyAuthor);
+        reversesortBy.add(revsortbyDate);
+        reversesortBy.add(revsortbyPlace);
+
+
+
+        JMenu fileMenu = new JMenu("file");
        fileMenu.add(addItem);
        fileMenu.add(openFileItem);
         JMenuBar menuBar = new JMenuBar();
         menuBar.add(fileMenu);
+        menuBar.add(sortBy);
+        menuBar.add(reversesortBy);
 
         mainFrame.setJMenuBar(menuBar);
         mainFrame.setSize(screenDim.width / 2, screenDim.height / 2);
