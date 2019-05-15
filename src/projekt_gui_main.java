@@ -1,5 +1,7 @@
 
 
+
+
 import javax.swing.*;
 import javax.swing.JFrame;
 import java.awt.*;
@@ -54,12 +56,12 @@ public class projekt_gui_main  {
 
         tags.setWrapStyleWord(true);
         JMenuItem addItem = new JMenuItem("Add Photo");
-
         JMenuItem openFileItem = new JMenuItem("Open library");
         JMenuItem sortbyDate = new JMenuItem("date");
         JMenuItem sortbyAuthor = new JMenuItem("author");
         JMenuItem sortbyPlace = new JMenuItem("place");
 
+        JButton deleteimage = new JButton("delete image");
 
         JMenuItem revsortbyDate = new JMenuItem("date");
         JMenuItem revsortbyAuthor = new JMenuItem("author");
@@ -148,6 +150,41 @@ public class projekt_gui_main  {
                 addImageWindow.setDefaultCloseOperation(addImageWindow.DISPOSE_ON_CLOSE);
                 addImageWindow.setVisible(true);
             }
+        });
+
+        deleteimage.addActionListener(e->{
+            JFrame removeImage = new JFrame();
+            JPanel deleteImgPanel = new JPanel();
+            deleteImgPanel.setLayout(new GridLayout());
+            for(int i=0;i<photos.size();i++){
+                JButton[]tab = new JButton[photos.size()];
+                tab[i] = new JButton();
+                ImageIcon img = new ImageIcon(photos.get(i).getPath());
+                Image scaleImage = img.getImage().getScaledInstance(winDim10.width-50,100,Image.SCALE_DEFAULT);
+                tab[i].setIcon(new ImageIcon(scaleImage));
+                deleteImgPanel.add(tab[i]);
+                System.out.println(photos.get(i).getPath());
+                deleteImgPanel.setLayout(new GridLayout());
+                int m =i;
+
+                tab[i].addActionListener(a->{
+                    photos.remove(m);
+                    gridphots.removeAll();
+                    recreatebuttons(winDim10, winDim2, centerlabel, centerpanel, gridphots, author, date, tags, place, photos);
+                    removeImage.revalidate();
+                    removeImage.repaint();
+                    gridphots.revalidate();
+                    gridphots.repaint();
+                    removeImage.setVisible(false);
+
+                });
+
+                gridphots.revalidate();
+                gridphots.repaint();
+            }
+            removeImage.add(deleteImgPanel);
+            removeImage.pack();
+            removeImage.setVisible(true);
         });
         sortbyAuthor.addActionListener(auth ->{
             Collections.sort(photos, new Comparator<Photo>() {
@@ -251,13 +288,15 @@ public class projekt_gui_main  {
 
 
 
+
         JMenu fileMenu = new JMenu("file");
-       fileMenu.add(addItem);
-       fileMenu.add(openFileItem);
+        fileMenu.add(addItem);
+        fileMenu.add(openFileItem);
         JMenuBar menuBar = new JMenuBar();
         menuBar.add(fileMenu);
         menuBar.add(sortBy);
         menuBar.add(reversesortBy);
+        menuBar.add(deleteimage);
 
         mainFrame.setJMenuBar(menuBar);
         mainFrame.setSize(screenDim.width / 2, screenDim.height / 2);
@@ -290,7 +329,9 @@ public class projekt_gui_main  {
                 centerlabel.setIcon(new ImageIcon(scaleclicked));
                 centerpanel.revalidate();
                 centerpanel.repaint();
+
             });
+
             gridphots.revalidate();
             gridphots.repaint();
         }
