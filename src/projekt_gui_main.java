@@ -1,7 +1,6 @@
 
 
 
-
 import javax.swing.*;
 import javax.swing.JFrame;
 import java.awt.*;
@@ -19,7 +18,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
-public class projekt_gui_main  {
+public class projekt_gui_main {
     public static void createAndShowGUI() {
         Dimension screenDim = Toolkit.getDefaultToolkit().getScreenSize();
         Dimension winDim5 = new Dimension();
@@ -29,16 +28,16 @@ public class projekt_gui_main  {
 
         JFrame mainFrame = new JFrame();
         mainFrame.addComponentListener(new ComponentAdapter() {
-            public void  componentResized(ComponentEvent e){
-                Component c = (Component)e.getSource();
+            public void componentResized(ComponentEvent e) {
+                Component c = (Component) e.getSource();
                 winDim2.height = c.getHeight();
-                winDim2.width = c.getWidth()/2;
+                winDim2.width = c.getWidth() / 2;
                 winDim5.height = c.getHeight();
-                winDim5.width = c.getWidth()/5;
+                winDim5.width = c.getWidth() / 5;
                 winDim4.height = c.getHeight();
-                winDim4.width = c.getWidth()/4;
+                winDim4.width = c.getWidth() / 4;
                 winDim10.height = c.getHeight();
-                winDim10.width = c.getWidth()/10;
+                winDim10.width = c.getWidth() / 10;
             }
         });
         JLabel centerlabel = new JLabel();
@@ -46,8 +45,8 @@ public class projekt_gui_main  {
         JPanel gridphots = new JPanel();
         JPanel borderphotos = new JPanel();
         JTextArea author = new JTextArea();
-        JTextPane date= new JTextPane();
-        JTextArea tags= new JTextArea();
+        JTextPane date = new JTextPane();
+        JTextArea tags = new JTextArea();
         tags.setLineWrap(true);
         tags.setRows(8);
 
@@ -62,6 +61,8 @@ public class projekt_gui_main  {
         JMenuItem sortbyPlace = new JMenuItem("place");
 
         JButton deleteimage = new JButton("delete image");
+
+        JButton editImage = new JButton("edit properties");
 
         JMenuItem revsortbyDate = new JMenuItem("date");
         JMenuItem revsortbyAuthor = new JMenuItem("author");
@@ -105,15 +106,15 @@ public class projekt_gui_main  {
                     recreatebuttons(winDim10, winDim2, centerlabel, centerpanel, gridphots, author, date, tags, place, photos);
                 } else JOptionPane.showMessageDialog(null, "wrong database extension");
             }
-            });
-        addItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P,ActionEvent.CTRL_MASK));
-        addItem.addActionListener(h->{
+        });
+        addItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P, ActionEvent.CTRL_MASK));
+        addItem.addActionListener(h -> {
             JFileChooser selectPhoto = new JFileChooser();
             int code = selectPhoto.showOpenDialog(mainFrame);
             if (code == JFileChooser.APPROVE_OPTION) {
                 String path = selectPhoto.getSelectedFile().getPath();
                 JFrame addImageWindow = new JFrame();
-                JTextArea pathAdd= new JTextArea(path);
+                JTextArea pathAdd = new JTextArea(path);
                 pathAdd.setEditable(false);
                 JTextArea authorAdd = new JTextArea("insert author");
                 JTextArea tagsAdd = new JTextArea("insert tags");
@@ -127,22 +128,23 @@ public class projekt_gui_main  {
                 textAreasLabel.add(dateAdd);
                 textAreasLabel.add(placeAdd);
                 addImageWindow.add(textAreasLabel);
-                textAreasLabel.setLayout(new GridLayout(6,1));
+                textAreasLabel.setLayout(new GridLayout(6, 1));
                 JButton addButton = new JButton("Add");
 
 
-                addButton.addActionListener(t->{
+                addButton.addActionListener(t -> {
                     System.out.println(dateAdd.toString());
-                    if(isApropriateDate(dateAdd)){
-                    Photo newPhoto = new Photo();
-                    newPhoto.setAuthor( authorAdd.getText());
-                    newPhoto.setDate(dateAdd.getText());
-                    newPhoto.setPath(pathAdd.getText());
-                    newPhoto.setTags(tagsAdd.getText());
-                    newPhoto.setPlace(placeAdd.getText());
-                    photos.add(newPhoto);
-                    gridphots.removeAll();
+                    if (isApropriateDate(dateAdd)) {
+                        Photo newPhoto = new Photo();
+                        newPhoto.setAuthor(authorAdd.getText());
+                        newPhoto.setDate(dateAdd.getText());
+                        newPhoto.setPath(pathAdd.getText());
+                        newPhoto.setTags(tagsAdd.getText());
+                        newPhoto.setPlace(placeAdd.getText());
+                        photos.add(newPhoto);
+                        gridphots.removeAll();
                         recreatebuttons(winDim10, winDim2, centerlabel, centerpanel, gridphots, author, date, tags, place, photos);
+                        addImageWindow.setVisible(false);
                     } else JOptionPane.showMessageDialog(null, "incorrect date format, please insert dd-mm-yyyy");
                 });
                 textAreasLabel.add(addButton);
@@ -152,27 +154,26 @@ public class projekt_gui_main  {
             }
         });
 
-        deleteimage.addActionListener(e->{
+        deleteimage.addActionListener(e -> {
             JFrame removeImage = new JFrame();
             JPanel deleteImgPanel = new JPanel();
             deleteImgPanel.setLayout(new GridLayout());
-            for(int i=0;i<photos.size();i++){
-                JButton[]tab = new JButton[photos.size()];
+            for (int i = 0; i < photos.size(); i++) {
+                JButton[] tab = new JButton[photos.size()];
                 tab[i] = new JButton();
                 ImageIcon img = new ImageIcon(photos.get(i).getPath());
-                Image scaleImage = img.getImage().getScaledInstance(winDim10.width-50,100,Image.SCALE_DEFAULT);
+                Image scaleImage = img.getImage().getScaledInstance(winDim10.width - 50, 100, Image.SCALE_DEFAULT);
                 tab[i].setIcon(new ImageIcon(scaleImage));
                 deleteImgPanel.add(tab[i]);
                 System.out.println(photos.get(i).getPath());
                 deleteImgPanel.setLayout(new GridLayout());
-                int m =i;
+                int m = i;
 
-                tab[i].addActionListener(a->{
+                tab[i].addActionListener(a -> {
                     photos.remove(m);
                     gridphots.removeAll();
                     recreatebuttons(winDim10, winDim2, centerlabel, centerpanel, gridphots, author, date, tags, place, photos);
-                    removeImage.revalidate();
-                    removeImage.repaint();
+
                     gridphots.revalidate();
                     gridphots.repaint();
                     removeImage.setVisible(false);
@@ -186,7 +187,69 @@ public class projekt_gui_main  {
             removeImage.pack();
             removeImage.setVisible(true);
         });
-        sortbyAuthor.addActionListener(auth ->{
+        editImage.addActionListener(ds -> {
+            JFrame chooseImage = new JFrame();
+            JPanel chooseImagePanel = new JPanel();
+            chooseImagePanel.setLayout(new GridLayout());
+            for (int i = 0; i < photos.size(); i++) {
+                JButton[] tab = new JButton[photos.size()];
+                tab[i] = new JButton();
+                ImageIcon img = new ImageIcon(photos.get(i).getPath());
+                Image scaleImage = img.getImage().getScaledInstance(winDim10.width - 50, 100, Image.SCALE_DEFAULT);
+                tab[i].setIcon(new ImageIcon(scaleImage));
+                chooseImagePanel.add(tab[i]);
+                System.out.println(photos.get(i).getPath());
+                chooseImagePanel.setLayout(new GridLayout());
+                int m = i;
+
+                tab[i].addActionListener(a -> {
+                    JFrame properties = new JFrame();
+                    JPanel propertiesPanel = new JPanel();
+                    propertiesPanel.setLayout(new GridLayout(5, 1));
+                    JTextArea editAuthor = new JTextArea(photos.get(m).getAuthor());
+                    JTextArea editPlace = new JTextArea(photos.get(m).getPlace());
+                    JTextArea editDate = new JTextArea(photos.get(m).getDate());
+                    JTextArea editTags = new JTextArea(photos.get(m).getTags());
+                    editTags.setLineWrap(true);
+                    propertiesPanel.add(editAuthor);
+                    propertiesPanel.add(editPlace);
+                    propertiesPanel.add(editDate);
+                    propertiesPanel.add(editTags);
+
+                    JButton setProperties = new JButton("set properties");
+                    propertiesPanel.add(setProperties);
+
+                    setProperties.addActionListener(ag -> {
+                        if (isApropriateDate(editDate)) {
+                            photos.get(m).setAuthor(editAuthor.getText());
+                            photos.get(m).setPlace(editPlace.getText());
+                            photos.get(m).setDate(editDate.getText());
+                            photos.get(m).setTags(editTags.getText());
+                            properties.setVisible(false);
+                            chooseImage.setVisible(false);
+                        }else  JOptionPane.showMessageDialog(null, "incorrect date format, please insert dd-mm-yyyy");
+                    });
+
+
+                    gridphots.removeAll();
+                    recreatebuttons(winDim10, winDim2, centerlabel, centerpanel, gridphots, author, date, tags, place, photos);
+                    gridphots.revalidate();
+                    gridphots.repaint();
+                    properties.add(propertiesPanel);
+                    properties.pack();
+                    properties.setVisible(true);
+                    chooseImage.setVisible(false);
+
+                });
+
+                gridphots.revalidate();
+                gridphots.repaint();
+            }
+            chooseImage.add(chooseImagePanel);
+            chooseImage.pack();
+            chooseImage.setVisible(true);
+        });
+        sortbyAuthor.addActionListener(auth -> {
             Collections.sort(photos, new Comparator<Photo>() {
                 @Override
                 public int compare(Photo o1, Photo o2) {
@@ -196,7 +259,7 @@ public class projekt_gui_main  {
             gridphots.removeAll();
             recreatebuttons(winDim10, winDim2, centerlabel, centerpanel, gridphots, author, date, tags, place, photos);
         });
-        sortbyDate.addActionListener(auth ->{
+        sortbyDate.addActionListener(auth -> {
             Collections.sort(photos, new Comparator<Photo>() {
                 @Override
                 public int compare(Photo o1, Photo o2) {
@@ -206,7 +269,7 @@ public class projekt_gui_main  {
             gridphots.removeAll();
             recreatebuttons(winDim10, winDim2, centerlabel, centerpanel, gridphots, author, date, tags, place, photos);
         });
-        sortbyPlace.addActionListener(auth ->{
+        sortbyPlace.addActionListener(auth -> {
             Collections.sort(photos, new Comparator<Photo>() {
                 @Override
                 public int compare(Photo o1, Photo o2) {
@@ -216,7 +279,7 @@ public class projekt_gui_main  {
             gridphots.removeAll();
             recreatebuttons(winDim10, winDim2, centerlabel, centerpanel, gridphots, author, date, tags, place, photos);
         });
-        revsortbyAuthor.addActionListener(auth ->{
+        revsortbyAuthor.addActionListener(auth -> {
             Collections.sort(photos, new Comparator<Photo>() {
                 @Override
                 public int compare(Photo o1, Photo o2) {
@@ -227,7 +290,7 @@ public class projekt_gui_main  {
             gridphots.removeAll();
             recreatebuttons(winDim10, winDim2, centerlabel, centerpanel, gridphots, author, date, tags, place, photos);
         });
-        revsortbyDate.addActionListener(auth ->{
+        revsortbyDate.addActionListener(auth -> {
             Collections.sort(photos, new Comparator<Photo>() {
                 @Override
                 public int compare(Photo o1, Photo o2) {
@@ -238,7 +301,7 @@ public class projekt_gui_main  {
             gridphots.removeAll();
             recreatebuttons(winDim10, winDim2, centerlabel, centerpanel, gridphots, author, date, tags, place, photos);
         });
-        revsortbyPlace.addActionListener(auth ->{
+        revsortbyPlace.addActionListener(auth -> {
             Collections.sort(photos, new Comparator<Photo>() {
                 @Override
                 public int compare(Photo o1, Photo o2) {
@@ -254,9 +317,9 @@ public class projekt_gui_main  {
         centerpanel.add(centerlabel);
 
         borderphotos.setLayout(new BorderLayout());
-        borderphotos.add(centerpanel,BorderLayout.CENTER);
+        borderphotos.add(centerpanel, BorderLayout.CENTER);
 
-        righttextpanel.setLayout(new GridLayout(4,1));
+        righttextpanel.setLayout(new GridLayout(4, 1));
 
         author.setEditable(false);
         tags.setEditable(false);
@@ -266,13 +329,13 @@ public class projekt_gui_main  {
         righttextpanel.add(tags);
         righttextpanel.add(date);
         righttextpanel.add(place);
-        righttextpanel.setPreferredSize(new Dimension(screenDim.width/16,screenDim.height));
+        righttextpanel.setPreferredSize(new Dimension(screenDim.width / 16, screenDim.height));
         borderphotos.add(righttextpanel, BorderLayout.LINE_END);
 
 
         scrollphotosleft.setPreferredSize(winDim5);
         scrollphotosleft.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-        borderphotos.add(scrollphotosleft,BorderLayout.LINE_START);
+        borderphotos.add(scrollphotosleft, BorderLayout.LINE_START);
         mainFrame.add(borderphotos);
         mainFrame.setVisible(true);
 
@@ -286,9 +349,6 @@ public class projekt_gui_main  {
         reversesortBy.add(revsortbyDate);
         reversesortBy.add(revsortbyPlace);
 
-
-
-
         JMenu fileMenu = new JMenu("file");
         fileMenu.add(addItem);
         fileMenu.add(openFileItem);
@@ -297,6 +357,7 @@ public class projekt_gui_main  {
         menuBar.add(sortBy);
         menuBar.add(reversesortBy);
         menuBar.add(deleteimage);
+        menuBar.add(editImage);
 
         mainFrame.setJMenuBar(menuBar);
         mainFrame.setSize(screenDim.width / 2, screenDim.height / 2);
@@ -307,21 +368,21 @@ public class projekt_gui_main  {
     }
 
     private static void recreatebuttons(Dimension winDim10, Dimension winDim2, JLabel centerlabel, JPanel centerpanel, JPanel gridphots, JTextArea author, JTextPane date, JTextArea tags, JTextPane place, ArrayList<Photo> photos) {
-        for(int i=0;i<photos.size();i++){
-            JButton[]tab = new JButton[photos.size()];
+        for (int i = 0; i < photos.size(); i++) {
+            JButton[] tab = new JButton[photos.size()];
             tab[i] = new JButton();
             ImageIcon img = new ImageIcon(photos.get(i).getPath());
-            Image scaleImage = img.getImage().getScaledInstance(winDim10.width-50,100,Image.SCALE_DEFAULT);
+            Image scaleImage = img.getImage().getScaledInstance(winDim10.width - 50, 100, Image.SCALE_DEFAULT);
             tab[i].setIcon(new ImageIcon(scaleImage));
             gridphots.add(tab[i]);
             System.out.println(photos.get(i).getPath());
-            gridphots.setLayout(new GridLayout(tab.length/2+1,2));
-            int m =i;
+            gridphots.setLayout(new GridLayout(tab.length / 2 + 1, 2));
+            int m = i;
 
-            tab[i].addActionListener(a->{
-                ImageIcon clickedimage =  new ImageIcon(photos.get(m).getPath());
-                Image scaleclicked = clickedimage.getImage().getScaledInstance(winDim2.width,winDim2.height,Image.SCALE_DEFAULT);
-                System.out.println("click"+m+photos.get(m).getPath());
+            tab[i].addActionListener(a -> {
+                ImageIcon clickedimage = new ImageIcon(photos.get(m).getPath());
+                Image scaleclicked = clickedimage.getImage().getScaledInstance(winDim2.width, winDim2.height, Image.SCALE_DEFAULT);
+                System.out.println("click" + m + photos.get(m).getPath());
                 author.setText(photos.get(m).getAuthor());
                 tags.setText(photos.get(m).getTags());
                 place.setText(photos.get(m).getPlace());
@@ -337,15 +398,15 @@ public class projekt_gui_main  {
         }
     }
 
-    public static Boolean isApropriateDate (JTextArea date){
+    public static Boolean isApropriateDate(JTextArea date) {
         String dat = date.getText();
         Pattern datepat = Pattern.compile("([12]?[0-9]|[3][01])-([0]?[0-9]|[1][012])-([0-9]{4})");
         Matcher datematch = datepat.matcher(dat);
-        if (datematch.find()){
-            return  true;
+        if (datematch.find()) {
+            return true;
         } else return false;
 
-}
+    }
 
 
     public static void main(String[] args) {
