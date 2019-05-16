@@ -25,7 +25,7 @@ public class projekt_gui_main {
         Dimension winDim10 = new Dimension();
         Dimension winDim4 = new Dimension();
         Dimension winDim2 = new Dimension();
-
+        //dimensions...
         JFrame mainFrame = new JFrame();
         mainFrame.addComponentListener(new ComponentAdapter() {
             public void componentResized(ComponentEvent e) {
@@ -68,11 +68,19 @@ public class projekt_gui_main {
         JMenuItem revsortbyAuthor = new JMenuItem("author");
         JMenuItem revsortbyPlace = new JMenuItem("place");
 
+        JMenuItem showHighestDate = new JMenuItem("Highest date");
+        JMenuItem showHighestAuthor = new JMenuItem("Highest author");
+        JMenuItem showHighestPlace = new JMenuItem("Highest place");
+        JMenuItem showLowestDate = new JMenuItem("Lowest date");
+        JMenuItem showLowestAuthor = new JMenuItem("Lowest author");
+        JMenuItem showLowestPlace = new JMenuItem("Lowest place");
+
         JFileChooser fileChooser = new JFileChooser();
         ArrayList data = new ArrayList();
         ArrayList<Photo> photos = new ArrayList<Photo>();
 
         JScrollPane scrollphotosleft = new JScrollPane(gridphots);
+        //open database code
         openFileItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK));
         openFileItem.addActionListener(e -> {
             int code = fileChooser.showOpenDialog(mainFrame);
@@ -107,6 +115,7 @@ public class projekt_gui_main {
                 } else JOptionPane.showMessageDialog(null, "wrong database extension");
             }
         });
+        //add single image code
         addItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P, ActionEvent.CTRL_MASK));
         addItem.addActionListener(h -> {
             JFileChooser selectPhoto = new JFileChooser();
@@ -153,7 +162,7 @@ public class projekt_gui_main {
                 addImageWindow.setVisible(true);
             }
         });
-
+        //delete image
         deleteimage.addActionListener(e -> {
             JFrame removeImage = new JFrame();
             JPanel deleteImgPanel = new JPanel();
@@ -187,6 +196,7 @@ public class projekt_gui_main {
             removeImage.pack();
             removeImage.setVisible(true);
         });
+       //edit properties
         editImage.addActionListener(ds -> {
             JFrame chooseImage = new JFrame();
             JPanel chooseImagePanel = new JPanel();
@@ -249,6 +259,7 @@ public class projekt_gui_main {
             chooseImage.pack();
             chooseImage.setVisible(true);
         });
+       //sorting buttons
         sortbyAuthor.addActionListener(auth -> {
             Collections.sort(photos, new Comparator<Photo>() {
                 @Override
@@ -312,7 +323,107 @@ public class projekt_gui_main {
             gridphots.removeAll();
             recreatebuttons(winDim10, winDim2, centerlabel, centerpanel, gridphots, author, date, tags, place, photos);
         });
-        centerlabel.setBackground(Color.BLACK);
+        //displaying image with highest property, i guess
+        showHighestAuthor.addActionListener(hig-> {
+                    ArrayList<Photo> tempArray = photos;
+                    Collections.sort(tempArray, new Comparator<Photo>() {
+                        @Override
+                        public int compare(Photo o1, Photo o2) {
+                            return o1.getAuthor().compareTo(o2.getAuthor());
+                        }
+                    });
+                    JFrame imageHFrame = new JFrame();
+                    JLabel imageHLabel = new JLabel();
+                    ImageIcon hImage = new ImageIcon(tempArray.get(0).getPath());
+                    imageHLabel.setIcon(hImage);
+                    imageHFrame.add(imageHLabel);
+                    imageHFrame.pack();
+                    imageHFrame.setVisible(true);
+        });
+        showHighestDate.addActionListener(hig-> {
+            ArrayList<Photo> tempArray = photos;
+            Collections.sort(tempArray, new Comparator<Photo>() {
+                @Override
+                public int compare(Photo o1, Photo o2) {
+                    return o1.getDate().compareTo(o2.getDate());
+                }
+            });
+            JFrame imageHFrame = new JFrame();
+            JLabel imageHLabel = new JLabel();
+            ImageIcon hImage = new ImageIcon(tempArray.get(0).getPath());
+            imageHLabel.setIcon(hImage);
+            imageHFrame.add(imageHLabel);
+            imageHFrame.pack();
+            imageHFrame.setVisible(true);
+        });
+        showHighestPlace.addActionListener(hig-> {
+            ArrayList<Photo> tempArray = photos;
+            Collections.sort(tempArray, new Comparator<Photo>() {
+                @Override
+                public int compare(Photo o1, Photo o2) {
+                    return o1.getPlace().compareTo(o2.getPlace());
+                }
+            });
+            JFrame imageHFrame = new JFrame();
+            JLabel imageHLabel = new JLabel();
+            ImageIcon hImage = new ImageIcon(tempArray.get(0).getPath());
+            imageHLabel.setIcon(hImage);
+            imageHFrame.add(imageHLabel);
+            imageHFrame.pack();
+            imageHFrame.setVisible(true);
+        });
+        showLowestAuthor.addActionListener(hig-> {
+            ArrayList<Photo> tempArray = photos;
+            Collections.sort(tempArray, new Comparator<Photo>() {
+                @Override
+                public int compare(Photo o1, Photo o2) {
+                    return o1.getAuthor().compareTo(o2.getAuthor());
+                }
+            });
+            Collections.reverse(tempArray);
+            JFrame imageHFrame = new JFrame();
+            JLabel imageHLabel = new JLabel();
+            ImageIcon hImage = new ImageIcon(tempArray.get(0).getPath());
+            imageHLabel.setIcon(hImage);
+            imageHFrame.add(imageHLabel);
+            imageHFrame.pack();
+            imageHFrame.setVisible(true);
+        });
+        showLowestDate.addActionListener(hig-> {
+            ArrayList<Photo> tempArray = photos;
+            Collections.sort(tempArray, new Comparator<Photo>() {
+                @Override
+                public int compare(Photo o1, Photo o2) {
+                    return o1.getDate().compareTo(o2.getDate());
+                }
+            });
+            Collections.reverse(tempArray);
+            JFrame imageHFrame = new JFrame();
+            JLabel imageHLabel = new JLabel();
+            ImageIcon hImage = new ImageIcon(tempArray.get(0).getPath());
+            imageHLabel.setIcon(hImage);
+            imageHFrame.add(imageHLabel);
+            imageHFrame.pack();
+            imageHFrame.setVisible(true);
+        });
+        showLowestPlace.addActionListener(hig-> {
+            ArrayList<Photo> tempArray = photos;
+            Collections.sort(tempArray, new Comparator<Photo>() {
+                @Override
+                public int compare(Photo o1, Photo o2) {
+                    return o1.getPlace().compareTo(o2.getPlace());
+                }
+            });
+            Collections.reverse(tempArray);
+            JFrame imageHFrame = new JFrame();
+            JLabel imageHLabel = new JLabel();
+            ImageIcon hImage = new ImageIcon(tempArray.get(0).getPath());
+            imageHLabel.setIcon(hImage);
+            imageHFrame.add(imageHLabel);
+            imageHFrame.pack();
+            imageHFrame.setVisible(true);
+        });
+
         centerpanel.setBackground(Color.BLUE);
         centerpanel.add(centerlabel);
 
@@ -352,12 +463,24 @@ public class projekt_gui_main {
         JMenu fileMenu = new JMenu("file");
         fileMenu.add(addItem);
         fileMenu.add(openFileItem);
+
+        JMenu showItemWith = new JMenu("Show image with");
+        showItemWith.add(showHighestAuthor);
+        showItemWith.add(showHighestDate);
+        showItemWith.add(showHighestPlace);
+        showItemWith.add(showLowestAuthor);
+        showItemWith.add(showLowestDate);
+        showItemWith.add(showLowestPlace);
+
+
+
         JMenuBar menuBar = new JMenuBar();
         menuBar.add(fileMenu);
         menuBar.add(sortBy);
         menuBar.add(reversesortBy);
         menuBar.add(deleteimage);
         menuBar.add(editImage);
+        menuBar.add(showItemWith);
 
         mainFrame.setJMenuBar(menuBar);
         mainFrame.setSize(screenDim.width / 2, screenDim.height / 2);
