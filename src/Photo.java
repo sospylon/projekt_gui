@@ -9,6 +9,7 @@ public class Photo {
     String tags;
     String place;
 
+
     public void setPath(String path) {
         this.path = path;
     }
@@ -68,6 +69,7 @@ public class Photo {
             this.date = divided[2];
             this.author = divided[3];
             this.place = divided[4];
+
         }
         else {
             JOptionPane.showMessageDialog(null, "wrong image extension");

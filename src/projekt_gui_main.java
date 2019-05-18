@@ -60,6 +60,8 @@ public class projekt_gui_main {
         JMenuItem sortbyAuthor = new JMenuItem("author");
         JMenuItem sortbyPlace = new JMenuItem("place");
 
+        JButton choosenTag = new JButton("choose tag");
+
         JButton deleteimage = new JButton("delete image");
 
         JButton editImage = new JButton("edit properties");
@@ -323,15 +325,16 @@ public class projekt_gui_main {
             gridphots.removeAll();
             recreatebuttons(winDim10, winDim2, centerlabel, centerpanel, gridphots, author, date, tags, place, photos);
         });
-        //displaying image with highest property, i guess
+        //displaying image properties with highest property
         showHighestAuthor.addActionListener(hig-> {
-                    ArrayList<Photo> tempArray = photos;
+                    ArrayList<Photo> tempArray = new ArrayList<>(photos);
                     Collections.sort(tempArray, new Comparator<Photo>() {
                         @Override
                         public int compare(Photo o1, Photo o2) {
                             return o1.getAuthor().compareTo(o2.getAuthor());
                         }
                     });
+            Collections.reverse(tempArray);
                     JFrame imageHFrame = new JFrame();
                     imageHFrame.setLayout(new BorderLayout());
                     JLabel imageHLabel = new JLabel();
@@ -358,15 +361,18 @@ public class projekt_gui_main {
                     imageHFrame.add(imageHLabel, BorderLayout.LINE_END);
                     imageHFrame.pack();
                     imageHFrame.setVisible(true);
+
+
         });
         showHighestDate.addActionListener(hig-> {
-            ArrayList<Photo> tempArray = photos;
+            ArrayList<Photo> tempArray = new ArrayList<>(photos);
             Collections.sort(tempArray, new Comparator<Photo>() {
                 @Override
                 public int compare(Photo o1, Photo o2) {
                     return o1.getDate().compareTo(o2.getDate());
                 }
             });
+            Collections.reverse(tempArray);
             JFrame imageHFrame = new JFrame();
             imageHFrame.setLayout(new BorderLayout());
             JLabel imageHLabel = new JLabel();
@@ -395,13 +401,14 @@ public class projekt_gui_main {
             imageHFrame.setVisible(true);
         });
         showHighestPlace.addActionListener(hig-> {
-            ArrayList<Photo> tempArray = photos;
+            ArrayList<Photo> tempArray = new ArrayList<>(photos);
             Collections.sort(tempArray, new Comparator<Photo>() {
                 @Override
                 public int compare(Photo o1, Photo o2) {
                     return o1.getPlace().compareTo(o2.getPlace());
                 }
             });
+            Collections.reverse(tempArray);
             JFrame imageHFrame = new JFrame();
             imageHFrame.setLayout(new BorderLayout());
             JLabel imageHLabel = new JLabel();
@@ -430,13 +437,14 @@ public class projekt_gui_main {
             imageHFrame.setVisible(true);
         });
         showLowestAuthor.addActionListener(hig-> {
-            ArrayList<Photo> tempArray = photos;
+            ArrayList<Photo> tempArray = new ArrayList<>(photos);
             Collections.sort(tempArray, new Comparator<Photo>() {
                 @Override
                 public int compare(Photo o1, Photo o2) {
                     return o1.getAuthor().compareTo(o2.getAuthor());
                 }
             });
+
             JFrame imageHFrame = new JFrame();
             imageHFrame.setLayout(new BorderLayout());
             JLabel imageHLabel = new JLabel();
@@ -465,13 +473,14 @@ public class projekt_gui_main {
             imageHFrame.setVisible(true);
         });
         showLowestDate.addActionListener(hig-> {
-            ArrayList<Photo> tempArray = photos;
+            ArrayList<Photo> tempArray = new ArrayList<>(photos);
             Collections.sort(tempArray, new Comparator<Photo>() {
                 @Override
                 public int compare(Photo o1, Photo o2) {
                     return o1.getDate().compareTo(o2.getDate());
                 }
             });
+
             JFrame imageHFrame = new JFrame();
             imageHFrame.setLayout(new BorderLayout());
             JLabel imageHLabel = new JLabel();
@@ -500,13 +509,14 @@ public class projekt_gui_main {
             imageHFrame.setVisible(true);
         });
         showLowestPlace.addActionListener(hig-> {
-            ArrayList<Photo> tempArray = photos;
+            ArrayList<Photo> tempArray = new ArrayList<>(photos);
             Collections.sort(tempArray, new Comparator<Photo>() {
                 @Override
                 public int compare(Photo o1, Photo o2) {
                     return o1.getPlace().compareTo(o2.getPlace());
                 }
             });
+
             JFrame imageHFrame = new JFrame();
             imageHFrame.setLayout(new BorderLayout());
             JLabel imageHLabel = new JLabel();
@@ -533,6 +543,10 @@ public class projekt_gui_main {
             imageHFrame.add(imageHLabel, BorderLayout.LINE_END);
             imageHFrame.pack();
             imageHFrame.setVisible(true);
+        });
+        //displaying images with chosen tag
+        choosenTag.addActionListener(chos->{
+
         });
 
         centerpanel.setBackground(Color.BLUE);
@@ -592,6 +606,7 @@ public class projekt_gui_main {
         menuBar.add(deleteimage);
         menuBar.add(editImage);
         menuBar.add(showItemWith);
+        menuBar.add(choosenTag);
 
         mainFrame.setJMenuBar(menuBar);
         mainFrame.setSize(screenDim.width / 2, screenDim.height / 2);
