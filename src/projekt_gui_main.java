@@ -546,7 +546,63 @@ public class projekt_gui_main {
         });
         //displaying images with chosen tag
         choosenTag.addActionListener(chos->{
+            JFrame tagChooseFrame = new JFrame();
+            JTextField tagTArea = new JTextField();
+            JButton searchTag = new JButton("searchTag");
+            tagTArea.setAutoscrolls(true);
+            tagChooseFrame.setLayout(new BorderLayout());
+            tagChooseFrame.add(tagTArea, BorderLayout.CENTER);
+            tagChooseFrame.add(searchTag,BorderLayout.LINE_END);
+            tagChooseFrame.setSize(300,100);
+            tagChooseFrame.setVisible(true);
+            searchTag.addActionListener(search->{
+                System.out.println(tagTArea.getText());
 
+            JFrame filteredImagesFrame = new JFrame();
+            JPanel filteredImagesPanel = new JPanel();
+            ArrayList<Photo> filteredPhotos = new ArrayList<>();
+                Pattern tagCheck = Pattern.compile(tagTArea.getText());
+            for(Photo photoInLoop:photos){
+                for (String tagInLoop:photoInLoop.getTagsSplit()){
+                    Matcher tagsMatcher = tagCheck.matcher(tagInLoop.toString());
+                    if (tagsMatcher.find()){
+                        filteredPhotos.add(photoInLoop);
+                    }
+                }
+            }
+                System.out.println("size of filteredPhotos is "+filteredPhotos.size());
+            if (filteredPhotos.size()>0){
+                for (int i = 0;i< filteredPhotos.size();i++){
+                    JButton[] tabFiltered = new JButton[filteredPhotos.size()];
+                    tabFiltered[i] = new JButton();
+                    ImageIcon img = new ImageIcon(filteredPhotos.get(i).getPath());
+                    Image scaleImage = img.getImage().getScaledInstance(winDim10.width - 50, 100, Image.SCALE_DEFAULT);
+                    tabFiltered[i].setIcon(new ImageIcon(scaleImage));
+                    filteredImagesPanel.add(tabFiltered[i]);
+                    filteredImagesPanel.setLayout(new GridLayout());
+                    int m = i;
+                    tabFiltered[i].addActionListener(a -> {
+                        ImageIcon clickedimage = new ImageIcon(filteredPhotos.get(m).getPath());
+                        Image scaleclicked = clickedimage.getImage().getScaledInstance(winDim2.width, winDim2.height, Image.SCALE_DEFAULT);
+                        author.setText(filteredPhotos.get(m).getAuthor());
+                        tags.setText(filteredPhotos.get(m).getTags());
+                        place.setText(filteredPhotos.get(m).getPlace());
+                        date.setText(filteredPhotos.get(m).getDate());
+                        centerlabel.setIcon(new ImageIcon(scaleclicked));
+                        centerpanel.revalidate();
+                        centerpanel.repaint();
+                        filteredImagesFrame.setVisible(false);
+
+                    });
+                }
+
+                filteredImagesFrame.setLayout(new GridLayout());
+                filteredImagesFrame.add(filteredImagesPanel);
+                filteredImagesFrame.pack();
+                filteredImagesFrame.setVisible(true);
+            } else JOptionPane.showMessageDialog(null, "no photos found");
+
+            });
         });
 
         centerpanel.setBackground(Color.BLUE);
