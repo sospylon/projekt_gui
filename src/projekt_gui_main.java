@@ -10,6 +10,8 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -56,15 +58,19 @@ public class projekt_gui_main {
         tags.setWrapStyleWord(true);
         JMenuItem addItem = new JMenuItem("Add Photo");
         JMenuItem openFileItem = new JMenuItem("Open library");
+        JMenuItem saveDatabase = new JMenuItem("Save Database");
+
         JMenuItem sortbyDate = new JMenuItem("date");
         JMenuItem sortbyAuthor = new JMenuItem("author");
         JMenuItem sortbyPlace = new JMenuItem("place");
 
-        JButton choosenTag = new JButton("choose tag");
+        JMenuItem dateSearch = new JMenuItem("search by date");
 
-        JButton deleteimage = new JButton("delete image");
+        JMenuItem choosenTag = new JMenuItem("choose tag");
 
-        JButton editImage = new JButton("edit properties");
+        JMenuItem deleteimage = new JMenuItem("delete image");
+
+        JMenuItem editImage = new JMenuItem("edit properties");
 
         JMenuItem revsortbyDate = new JMenuItem("date");
         JMenuItem revsortbyAuthor = new JMenuItem("author");
@@ -604,6 +610,141 @@ public class projekt_gui_main {
 
             });
         });
+        //search by date
+        dateSearch.addActionListener(search->{
+            JFrame dateSearchFrame = new JFrame();
+            JTextArea dateArea = new JTextArea();
+            JButton greaterThan = new JButton("Greater Than");
+            JButton lessThan = new JButton("Lesser Than");
+            JPanel buttonsPanel = new JPanel();
+            buttonsPanel.setLayout(new GridLayout(2,1));
+            buttonsPanel.add(greaterThan);
+            buttonsPanel.add(lessThan);
+            dateSearchFrame.setLayout(new BorderLayout());
+            dateSearchFrame.add(dateArea,BorderLayout.CENTER);
+            dateSearchFrame.add(buttonsPanel,BorderLayout.LINE_END);
+            dateSearchFrame.setSize(300,100);
+            dateSearchFrame.setVisible(true);
+            greaterThan.addActionListener(great->{
+                ArrayList<Photo> filteredByDate = new ArrayList<>();
+                if (isApropriateDate(dateArea)){
+                    String[] dateDivided = dateArea.getText().split("-");
+                    for(Photo iter:photos){
+                        String[] tempDateArr = iter.getDate().split("-");
+                       if( isGreaterDate(dateDivided,tempDateArr)){
+                           filteredByDate.add(iter);
+                       }
+                    }
+             } else JOptionPane.showMessageDialog(null, "incorrect date");
+            if (filteredByDate.size()>0){
+                dateSearchFrame.setVisible(false);
+                JFrame filteredByDateFrame = new JFrame();
+                JPanel filteredByDatePanel = new JPanel();
+                for (int i = 0;i< filteredByDate.size();i++){
+                    JButton[] tabFiltered = new JButton[filteredByDate.size()];
+                    tabFiltered[i] = new JButton();
+                    ImageIcon img = new ImageIcon(filteredByDate.get(i).getPath());
+                    Image scaleImage = img.getImage().getScaledInstance(winDim10.width - 50, 100, Image.SCALE_DEFAULT);
+                    tabFiltered[i].setIcon(new ImageIcon(scaleImage));
+                    filteredByDatePanel.add(tabFiltered[i]);
+                    filteredByDatePanel.setLayout(new GridLayout());
+                    int m = i;
+                    tabFiltered[i].addActionListener(a -> {
+                        ImageIcon clickedimage = new ImageIcon(filteredByDate.get(m).getPath());
+                        Image scaleclicked = clickedimage.getImage().getScaledInstance(winDim2.width, winDim2.height, Image.SCALE_DEFAULT);
+                        author.setText(filteredByDate.get(m).getAuthor());
+                        tags.setText(filteredByDate.get(m).getTags());
+                        place.setText(filteredByDate.get(m).getPlace());
+                        date.setText(filteredByDate.get(m).getDate());
+                        centerlabel.setIcon(new ImageIcon(scaleclicked));
+                        centerpanel.revalidate();
+                        centerpanel.repaint();
+                        filteredByDateFrame.setVisible(false);
+
+                    });
+                }
+                filteredByDateFrame.setLayout(new GridLayout());
+                filteredByDateFrame.add(filteredByDatePanel);
+                filteredByDateFrame.pack();
+                filteredByDateFrame.setVisible(true);
+            }
+            if(filteredByDate.size()==0){
+                JOptionPane.showMessageDialog(null, "no photos found");
+            }
+            });
+            lessThan.addActionListener(great->{
+                ArrayList<Photo> filteredByDate = new ArrayList<>();
+                if (isApropriateDate(dateArea)){
+                    String[] dateDivided = dateArea.getText().split("-");
+                    for(Photo iter:photos){
+                        String[] tempDateArr = iter.getDate().split("-");
+                        if( isLesserDate(dateDivided,tempDateArr)){
+                            filteredByDate.add(iter);
+                        }
+                    }
+                } else JOptionPane.showMessageDialog(null, "incorrect date");
+                if (filteredByDate.size()>0){
+                    dateSearchFrame.setVisible(false);
+                    JFrame filteredByDateFrame = new JFrame();
+                    JPanel filteredByDatePanel = new JPanel();
+                    for (int i = 0;i< filteredByDate.size();i++){
+                        JButton[] tabFiltered = new JButton[filteredByDate.size()];
+                        tabFiltered[i] = new JButton();
+                        ImageIcon img = new ImageIcon(filteredByDate.get(i).getPath());
+                        Image scaleImage = img.getImage().getScaledInstance(winDim10.width - 50, 100, Image.SCALE_DEFAULT);
+                        tabFiltered[i].setIcon(new ImageIcon(scaleImage));
+                        filteredByDatePanel.add(tabFiltered[i]);
+                        filteredByDatePanel.setLayout(new GridLayout());
+                        int m = i;
+                        tabFiltered[i].addActionListener(a -> {
+                            ImageIcon clickedimage = new ImageIcon(filteredByDate.get(m).getPath());
+                            Image scaleclicked = clickedimage.getImage().getScaledInstance(winDim2.width, winDim2.height, Image.SCALE_DEFAULT);
+                            author.setText(filteredByDate.get(m).getAuthor());
+                            tags.setText(filteredByDate.get(m).getTags());
+                            place.setText(filteredByDate.get(m).getPlace());
+                            date.setText(filteredByDate.get(m).getDate());
+                            centerlabel.setIcon(new ImageIcon(scaleclicked));
+                            centerpanel.revalidate();
+                            centerpanel.repaint();
+                            filteredByDateFrame.setVisible(false);
+
+                        });
+                    }
+                    filteredByDateFrame.setLayout(new GridLayout());
+                    filteredByDateFrame.add(filteredByDatePanel);
+                    filteredByDateFrame.pack();
+                    filteredByDateFrame.setVisible(true);
+                }
+                if(filteredByDate.size()==0){
+                    JOptionPane.showMessageDialog(null, "no photos found");
+                }
+            });
+        });
+        //save to chosen file
+        saveDatabase.addActionListener(sData->{
+            int code = fileChooser.showOpenDialog(mainFrame);
+            if (code == JFileChooser.APPROVE_OPTION) {
+                String path = fileChooser.getSelectedFile().getPath();
+                Pattern checkdatabase = Pattern.compile(".*\\.txt\\b");
+                Matcher matchdatabase = checkdatabase.matcher(path);
+                if(matchdatabase.find()){
+                    try {
+                        FileWriter databaseWriter = new FileWriter(path);
+                        if (photos.size()>0){
+                            for(Photo iter:photos){
+                                databaseWriter.write(iter.getPath()+";"+iter.getTags()+";"+iter.getDate()+";"+iter.getAuthor()+";"+iter.getPlace()+";"+"\r\n");
+
+                                System.out.println("zapisano "+iter.getPath());
+                            }
+                            databaseWriter.close();
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        System.out.println("exception z zapisu bazy");
+                    }
+                }else JOptionPane.showMessageDialog(null, "please select .txt file");
+            }
+        });
 
         centerpanel.setBackground(Color.BLUE);
         centerpanel.add(centerlabel);
@@ -644,6 +785,7 @@ public class projekt_gui_main {
         JMenu fileMenu = new JMenu("file");
         fileMenu.add(addItem);
         fileMenu.add(openFileItem);
+        fileMenu.add(saveDatabase);
 
         JMenu showItemWith = new JMenu("Show image with");
         showItemWith.add(showHighestAuthor);
@@ -663,6 +805,7 @@ public class projekt_gui_main {
         menuBar.add(editImage);
         menuBar.add(showItemWith);
         menuBar.add(choosenTag);
+        menuBar.add(dateSearch);
 
         mainFrame.setJMenuBar(menuBar);
         mainFrame.setSize(screenDim.width / 2, screenDim.height / 2);
@@ -712,7 +855,48 @@ public class projekt_gui_main {
         } else return false;
 
     }
+    public static Boolean isGreaterDate (String[] arrayFromTextArea,String[] arrayFromList){
+       if(Integer.valueOf(arrayFromTextArea[2])<Integer.valueOf(arrayFromList[2])){ return true; }
 
+       if (Integer.valueOf(arrayFromTextArea[2])==Integer.valueOf(arrayFromList[2])){
+       }else if (Integer.valueOf(arrayFromTextArea[1])<Integer.valueOf(arrayFromList[1])){ return true;}
+
+       if(Integer.valueOf(arrayFromTextArea[2])==Integer.valueOf(arrayFromList[2])){
+       }else if (Integer.valueOf(arrayFromTextArea[1])==Integer.valueOf(arrayFromList[1])){
+       } else if (Integer.valueOf(arrayFromTextArea[0])<Integer.valueOf(arrayFromList[0])){return true;}
+
+        if(Integer.valueOf(arrayFromTextArea[2])>Integer.valueOf(arrayFromList[2])){ return false; }
+
+        if (Integer.valueOf(arrayFromTextArea[2])==Integer.valueOf(arrayFromList[2])){
+        }else if (Integer.valueOf(arrayFromTextArea[1])>Integer.valueOf(arrayFromList[1])){ return false;}
+
+        if(Integer.valueOf(arrayFromTextArea[2])==Integer.valueOf(arrayFromList[2])){
+        }else if (Integer.valueOf(arrayFromTextArea[1])==Integer.valueOf(arrayFromList[1])){
+        } else if (Integer.valueOf(arrayFromTextArea[0])>Integer.valueOf(arrayFromList[0])){return false;}
+        System.out.println("something went wring in date comparison");
+        return true;
+    }
+    public static Boolean isLesserDate (String[] arrayFromTextArea,String[] arrayFromList){
+        if(Integer.valueOf(arrayFromTextArea[2])<Integer.valueOf(arrayFromList[2])){ return false; }
+
+        if (Integer.valueOf(arrayFromTextArea[2])==Integer.valueOf(arrayFromList[2])){
+        }else if (Integer.valueOf(arrayFromTextArea[1])<Integer.valueOf(arrayFromList[1])){ return false;}
+
+        if(Integer.valueOf(arrayFromTextArea[2])==Integer.valueOf(arrayFromList[2])){
+        }else if (Integer.valueOf(arrayFromTextArea[1])==Integer.valueOf(arrayFromList[1])){
+        } else if (Integer.valueOf(arrayFromTextArea[0])<Integer.valueOf(arrayFromList[0])){return false;}
+
+        if(Integer.valueOf(arrayFromTextArea[2])>Integer.valueOf(arrayFromList[2])){ return true; }
+
+        if (Integer.valueOf(arrayFromTextArea[2])==Integer.valueOf(arrayFromList[2])){
+        }else if (Integer.valueOf(arrayFromTextArea[1])>Integer.valueOf(arrayFromList[1])){ return true;}
+
+        if(Integer.valueOf(arrayFromTextArea[2])==Integer.valueOf(arrayFromList[2])){
+        }else if (Integer.valueOf(arrayFromTextArea[1])==Integer.valueOf(arrayFromList[1])){
+        } else if (Integer.valueOf(arrayFromTextArea[0])>Integer.valueOf(arrayFromList[0])){return true;}
+        System.out.println("something went wring in date comparison");
+        return true;
+    }
 
     public static void main(String[] args) {
 
