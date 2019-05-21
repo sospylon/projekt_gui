@@ -647,7 +647,7 @@ public class projekt_gui_main {
                     String[] dateDivided = dateArea.getText().split("-");
                     for(Photo iter:photos){
                         String[] tempDateArr = iter.getDate().split("-");
-                       if( isGreaterDate(dateDivided,tempDateArr)){
+                       if( isLesserDate(dateDivided,tempDateArr)){
                            filteredByDate.add(iter);
                        }
                     }
@@ -694,7 +694,7 @@ public class projekt_gui_main {
                     String[] dateDivided = dateArea.getText().split("-");
                     for(Photo iter:photos){
                         String[] tempDateArr = iter.getDate().split("-");
-                        if( isLesserDate(dateDivided,tempDateArr)){
+                        if(isGreaterDate(dateDivided,tempDateArr)){
                             filteredByDate.add(iter);
                         }
                     }
