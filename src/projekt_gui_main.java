@@ -66,7 +66,10 @@ public class projekt_gui_main {
 
         JMenuItem dateSearch = new JMenuItem("search by date");
 
-        JMenuItem choosenTag = new JMenuItem("choose tag");
+        JMenuItem choosenTag = new JMenuItem("Tag");
+        JMenuItem choosenDate = new JMenuItem("Date");
+        JMenuItem choosenAuthor = new JMenuItem("Author");
+        JMenuItem choosenPlace = new JMenuItem("Place");
 
         JMenuItem deleteimage = new JMenuItem("delete image");
 
@@ -93,6 +96,7 @@ public class projekt_gui_main {
         openFileItem.addActionListener(e -> {
             int code = fileChooser.showOpenDialog(mainFrame);
             if (code == JFileChooser.APPROVE_OPTION) {
+               photos.clear();
                 gridphots.removeAll();
                 String path = fileChooser.getSelectedFile().getPath();
                 Pattern checkdatabase = Pattern.compile(".*\\.txt\\b");
@@ -131,6 +135,7 @@ public class projekt_gui_main {
             if (code == JFileChooser.APPROVE_OPTION) {
                 String path = selectPhoto.getSelectedFile().getPath();
                 JFrame addImageWindow = new JFrame();
+                addImageWindow.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
                 JTextArea pathAdd = new JTextArea(path);
                 pathAdd.setEditable(false);
                 JTextArea authorAdd = new JTextArea("insert author");
@@ -153,11 +158,24 @@ public class projekt_gui_main {
                     System.out.println(dateAdd.toString());
                     if (isApropriateDate(dateAdd)) {
                         Photo newPhoto = new Photo();
-                        newPhoto.setAuthor(authorAdd.getText());
-                        newPhoto.setDate(dateAdd.getText());
-                        newPhoto.setPath(pathAdd.getText());
-                        newPhoto.setTags(tagsAdd.getText());
-                        newPhoto.setPlace(placeAdd.getText());
+                        if (!authorAdd.getText().isEmpty()) {
+                            newPhoto.setAuthor(authorAdd.getText());
+                        } else newPhoto.setAuthor("No Data");
+                        if (!dateAdd.getText().isEmpty()) {
+                            newPhoto.setDate(dateAdd.getText());
+                        } else newPhoto.setDate("No Data");
+                        if (!pathAdd.getText().isEmpty()) {
+                            newPhoto.setPath(pathAdd.getText());
+                        } else newPhoto.setPath("No Data");
+                        if (!tagsAdd.getText().isEmpty()) {
+                            newPhoto.setTags(tagsAdd.getText());
+                        } else {
+                            newPhoto.setTags("No Data");
+                            newPhoto.setTagsSplit(new String[]{"No Data"});
+                        }
+                        if (!placeAdd.getText().isEmpty()) {
+                            newPhoto.setPlace(placeAdd.getText());
+                        } else newPhoto.setPlace("No Data");
                         photos.add(newPhoto);
                         gridphots.removeAll();
                         recreatebuttons(winDim10, winDim2, centerlabel, centerpanel, gridphots, author, date, tags, place, photos);
@@ -172,8 +190,9 @@ public class projekt_gui_main {
         });
         //delete image
         deleteimage.addActionListener(e -> {
-            if (photos.size()>0) {
+            if (photos.size() > 0) {
                 JFrame removeImage = new JFrame();
+                removeImage.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
                 JPanel deleteImgPanel = new JPanel();
                 deleteImgPanel.setLayout(new GridLayout());
                 for (int i = 0; i < photos.size(); i++) {
@@ -205,11 +224,12 @@ public class projekt_gui_main {
                 removeImage.pack();
                 removeImage.setVisible(true);
             } else JOptionPane.showMessageDialog(null, "no images found");
-            });
-       //edit properties
+        });
+        //edit properties
         editImage.addActionListener(ds -> {
-            if (photos.size()>0) {
+            if (photos.size() > 0) {
                 JFrame chooseImage = new JFrame();
+                chooseImage.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
                 JPanel chooseImagePanel = new JPanel();
                 chooseImagePanel.setLayout(new GridLayout());
                 for (int i = 0; i < photos.size(); i++) {
@@ -223,8 +243,9 @@ public class projekt_gui_main {
                     chooseImagePanel.setLayout(new GridLayout());
                     int m = i;
 
-                    tab[i].addActionListener(a -> {
+                    tab[m].addActionListener(a -> {
                         JFrame properties = new JFrame();
+                        properties.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
                         JPanel propertiesPanel = new JPanel();
                         propertiesPanel.setLayout(new GridLayout(5, 1));
                         JTextArea editAuthor = new JTextArea(photos.get(m).getAuthor());
@@ -271,8 +292,8 @@ public class projekt_gui_main {
                 chooseImage.pack();
                 chooseImage.setVisible(true);
             } else JOptionPane.showMessageDialog(null, "no images found");
-            });
-       //sorting buttons
+        });
+        //sorting buttons
         sortbyAuthor.addActionListener(auth -> {
             Collections.sort(photos, new Comparator<Photo>() {
                 @Override
@@ -337,373 +358,535 @@ public class projekt_gui_main {
             recreatebuttons(winDim10, winDim2, centerlabel, centerpanel, gridphots, author, date, tags, place, photos);
         });
         //displaying image properties with highest property
-        showHighestAuthor.addActionListener(hig-> {
-                   if (photos.size()>0) {
-                       ArrayList<Photo> tempArray = new ArrayList<>(photos);
-                       Collections.sort(tempArray, new Comparator<Photo>() {
-                           @Override
-                           public int compare(Photo o1, Photo o2) {
-                               return o1.getAuthor().compareTo(o2.getAuthor());
-                           }
-                       });
-                       Collections.reverse(tempArray);
-                       JFrame imageHFrame = new JFrame();
-                       imageHFrame.setLayout(new BorderLayout());
-                       JLabel imageHLabel = new JLabel();
-                       JTextArea authorHig = new JTextArea(tempArray.get(0).getAuthor());
-                       JTextArea pathHig = new JTextArea(tempArray.get(0).getPath());
-                       JTextArea dateHig = new JTextArea(tempArray.get(0).getDate());
-                       JTextArea placeHig = new JTextArea(tempArray.get(0).getPlace());
-                       JTextArea tagsHig = new JTextArea(tempArray.get(0).getTags());
-                       JPanel textAreas = new JPanel();
-                       textAreas.setLayout(new GridLayout(5, 1));
-                       textAreas.add(pathHig);
-                       textAreas.add(dateHig);
-                       textAreas.add(authorHig);
-                       textAreas.add(placeHig);
-                       textAreas.add(tagsHig);
-                       pathHig.setEditable(false);
-                       dateHig.setEditable(false);
-                       tagsHig.setEditable(false);
-                       placeHig.setEditable(false);
-                       authorHig.setEditable(false);
-                       ImageIcon hImage = new ImageIcon(tempArray.get(0).getPath());
-                       imageHLabel.setIcon(hImage);
-                       imageHFrame.add(textAreas, BorderLayout.LINE_START);
-                       imageHFrame.add(imageHLabel, BorderLayout.LINE_END);
-                       imageHFrame.pack();
-                       imageHFrame.setVisible(true);
-                   }else JOptionPane.showMessageDialog(null, "no images found");
+        showHighestAuthor.addActionListener(hig -> {
+            if (photos.size() > 0) {
+                ArrayList<Photo> tempArray = new ArrayList<>(photos);
+                Collections.sort(tempArray, new Comparator<Photo>() {
+                    @Override
+                    public int compare(Photo o1, Photo o2) {
+                        return o1.getAuthor().compareTo(o2.getAuthor());
+                    }
+                });
+                Collections.reverse(tempArray);
+                JFrame imageHFrame = new JFrame();
+                imageHFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+                imageHFrame.setLayout(new BorderLayout());
+                JLabel imageHLabel = new JLabel();
+                JTextArea authorHig = new JTextArea(tempArray.get(0).getAuthor());
+                JTextArea pathHig = new JTextArea(tempArray.get(0).getPath());
+                JTextArea dateHig = new JTextArea(tempArray.get(0).getDate());
+                JTextArea placeHig = new JTextArea(tempArray.get(0).getPlace());
+                JTextArea tagsHig = new JTextArea(tempArray.get(0).getTags());
+                JPanel textAreas = new JPanel();
+                textAreas.setLayout(new GridLayout(5, 1));
+                textAreas.add(pathHig);
+                textAreas.add(dateHig);
+                textAreas.add(authorHig);
+                textAreas.add(placeHig);
+                textAreas.add(tagsHig);
+                pathHig.setEditable(false);
+                dateHig.setEditable(false);
+                tagsHig.setEditable(false);
+                placeHig.setEditable(false);
+                authorHig.setEditable(false);
+                ImageIcon hImage = new ImageIcon(tempArray.get(0).getPath());
+                imageHLabel.setIcon(hImage);
+                imageHFrame.add(textAreas, BorderLayout.LINE_START);
+                imageHFrame.add(imageHLabel, BorderLayout.LINE_END);
+                imageHFrame.pack();
+                imageHFrame.setVisible(true);
+            } else JOptionPane.showMessageDialog(null, "no images found");
 
         });
-        showHighestDate.addActionListener(hig-> {
-            if (photos.size()>0) {
-            ArrayList<Photo> tempArray = new ArrayList<>(photos);
-            Collections.sort(tempArray, new Comparator<Photo>() {
-                @Override
-                public int compare(Photo o1, Photo o2) {
-                    return o1.getDate().compareTo(o2.getDate());
-                }
-            });
-            Collections.reverse(tempArray);
-            JFrame imageHFrame = new JFrame();
-            imageHFrame.setLayout(new BorderLayout());
-            JLabel imageHLabel = new JLabel();
-            JTextArea authorHig = new JTextArea(tempArray.get(0).getAuthor());
-            JTextArea pathHig = new JTextArea(tempArray.get(0).getPath());
-            JTextArea dateHig = new JTextArea(tempArray.get(0).getDate());
-            JTextArea placeHig = new JTextArea(tempArray.get(0).getPlace());
-            JTextArea tagsHig = new JTextArea(tempArray.get(0).getTags());
-            JPanel textAreas = new JPanel();
-            textAreas.setLayout(new GridLayout(5,1));
-            textAreas.add(pathHig);
-            textAreas.add(dateHig);
-            textAreas.add(authorHig);
-            textAreas.add(placeHig);
-            textAreas.add(tagsHig);
-            pathHig.setEditable(false);
-            dateHig.setEditable(false);
-            tagsHig.setEditable(false);
-            placeHig.setEditable(false);
-            authorHig.setEditable(false);
-            ImageIcon hImage = new ImageIcon(tempArray.get(0).getPath());
-            imageHLabel.setIcon(hImage);
-            imageHFrame.add(textAreas,BorderLayout.LINE_START);
-            imageHFrame.add(imageHLabel, BorderLayout.LINE_END);
-            imageHFrame.pack();
-            imageHFrame.setVisible(true);
-            }else JOptionPane.showMessageDialog(null, "no images found");
-            });
-        showHighestPlace.addActionListener(hig-> {
-            if (photos.size()>0) {
-            ArrayList<Photo> tempArray = new ArrayList<>(photos);
-            Collections.sort(tempArray, new Comparator<Photo>() {
-                @Override
-                public int compare(Photo o1, Photo o2) {
-                    return o1.getPlace().compareTo(o2.getPlace());
-                }
-            });
-            Collections.reverse(tempArray);
-            JFrame imageHFrame = new JFrame();
-            imageHFrame.setLayout(new BorderLayout());
-            JLabel imageHLabel = new JLabel();
-            JTextArea authorHig = new JTextArea(tempArray.get(0).getAuthor());
-            JTextArea pathHig = new JTextArea(tempArray.get(0).getPath());
-            JTextArea dateHig = new JTextArea(tempArray.get(0).getDate());
-            JTextArea placeHig = new JTextArea(tempArray.get(0).getPlace());
-            JTextArea tagsHig = new JTextArea(tempArray.get(0).getTags());
-            JPanel textAreas = new JPanel();
-            textAreas.setLayout(new GridLayout(5,1));
-            textAreas.add(pathHig);
-            textAreas.add(dateHig);
-            textAreas.add(authorHig);
-            textAreas.add(placeHig);
-            textAreas.add(tagsHig);
-            pathHig.setEditable(false);
-            dateHig.setEditable(false);
-            tagsHig.setEditable(false);
-            placeHig.setEditable(false);
-            authorHig.setEditable(false);
-            ImageIcon hImage = new ImageIcon(tempArray.get(0).getPath());
-            imageHLabel.setIcon(hImage);
-            imageHFrame.add(textAreas,BorderLayout.LINE_START);
-            imageHFrame.add(imageHLabel, BorderLayout.LINE_END);
-            imageHFrame.pack();
-            imageHFrame.setVisible(true);
-            }else JOptionPane.showMessageDialog(null, "no images found");
+        showHighestDate.addActionListener(hig -> {
+            if (photos.size() > 0) {
+                ArrayList<Photo> tempArray = new ArrayList<>(photos);
+                Collections.sort(tempArray, new Comparator<Photo>() {
+                    @Override
+                    public int compare(Photo o1, Photo o2) {
+                        return o1.getDate().compareTo(o2.getDate());
+                    }
+                });
+                Collections.reverse(tempArray);
+                JFrame imageHFrame = new JFrame();
+                imageHFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+                imageHFrame.setLayout(new BorderLayout());
+                JLabel imageHLabel = new JLabel();
+                JTextArea authorHig = new JTextArea(tempArray.get(0).getAuthor());
+                JTextArea pathHig = new JTextArea(tempArray.get(0).getPath());
+                JTextArea dateHig = new JTextArea(tempArray.get(0).getDate());
+                JTextArea placeHig = new JTextArea(tempArray.get(0).getPlace());
+                JTextArea tagsHig = new JTextArea(tempArray.get(0).getTags());
+                JPanel textAreas = new JPanel();
+                textAreas.setLayout(new GridLayout(5, 1));
+                textAreas.add(pathHig);
+                textAreas.add(dateHig);
+                textAreas.add(authorHig);
+                textAreas.add(placeHig);
+                textAreas.add(tagsHig);
+                pathHig.setEditable(false);
+                dateHig.setEditable(false);
+                tagsHig.setEditable(false);
+                placeHig.setEditable(false);
+                authorHig.setEditable(false);
+                ImageIcon hImage = new ImageIcon(tempArray.get(0).getPath());
+                imageHLabel.setIcon(hImage);
+                imageHFrame.add(textAreas, BorderLayout.LINE_START);
+                imageHFrame.add(imageHLabel, BorderLayout.LINE_END);
+                imageHFrame.pack();
+                imageHFrame.setVisible(true);
+            } else JOptionPane.showMessageDialog(null, "no images found");
         });
-        showLowestAuthor.addActionListener(hig-> {
-            if (photos.size()>0) {
-            ArrayList<Photo> tempArray = new ArrayList<>(photos);
-            Collections.sort(tempArray, new Comparator<Photo>() {
-                @Override
-                public int compare(Photo o1, Photo o2) {
-                    return o1.getAuthor().compareTo(o2.getAuthor());
-                }
-            });
-
-            JFrame imageHFrame = new JFrame();
-            imageHFrame.setLayout(new BorderLayout());
-            JLabel imageHLabel = new JLabel();
-            JTextArea authorHig = new JTextArea(tempArray.get(0).getAuthor());
-            JTextArea pathHig = new JTextArea(tempArray.get(0).getPath());
-            JTextArea dateHig = new JTextArea(tempArray.get(0).getDate());
-            JTextArea placeHig = new JTextArea(tempArray.get(0).getPlace());
-            JTextArea tagsHig = new JTextArea(tempArray.get(0).getTags());
-            JPanel textAreas = new JPanel();
-            textAreas.setLayout(new GridLayout(5,1));
-            textAreas.add(pathHig);
-            textAreas.add(dateHig);
-            textAreas.add(authorHig);
-            textAreas.add(placeHig);
-            textAreas.add(tagsHig);
-            pathHig.setEditable(false);
-            dateHig.setEditable(false);
-            tagsHig.setEditable(false);
-            placeHig.setEditable(false);
-            authorHig.setEditable(false);
-            ImageIcon hImage = new ImageIcon(tempArray.get(0).getPath());
-            imageHLabel.setIcon(hImage);
-            imageHFrame.add(textAreas,BorderLayout.LINE_START);
-            imageHFrame.add(imageHLabel, BorderLayout.LINE_END);
-            imageHFrame.pack();
-            imageHFrame.setVisible(true);
-            }else JOptionPane.showMessageDialog(null, "no images found");
+        showHighestPlace.addActionListener(hig -> {
+            if (photos.size() > 0) {
+                ArrayList<Photo> tempArray = new ArrayList<>(photos);
+                Collections.sort(tempArray, new Comparator<Photo>() {
+                    @Override
+                    public int compare(Photo o1, Photo o2) {
+                        return o1.getPlace().compareTo(o2.getPlace());
+                    }
+                });
+                Collections.reverse(tempArray);
+                JFrame imageHFrame = new JFrame();
+                imageHFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+                imageHFrame.setLayout(new BorderLayout());
+                JLabel imageHLabel = new JLabel();
+                JTextArea authorHig = new JTextArea(tempArray.get(0).getAuthor());
+                JTextArea pathHig = new JTextArea(tempArray.get(0).getPath());
+                JTextArea dateHig = new JTextArea(tempArray.get(0).getDate());
+                JTextArea placeHig = new JTextArea(tempArray.get(0).getPlace());
+                JTextArea tagsHig = new JTextArea(tempArray.get(0).getTags());
+                JPanel textAreas = new JPanel();
+                textAreas.setLayout(new GridLayout(5, 1));
+                textAreas.add(pathHig);
+                textAreas.add(dateHig);
+                textAreas.add(authorHig);
+                textAreas.add(placeHig);
+                textAreas.add(tagsHig);
+                pathHig.setEditable(false);
+                dateHig.setEditable(false);
+                tagsHig.setEditable(false);
+                placeHig.setEditable(false);
+                authorHig.setEditable(false);
+                ImageIcon hImage = new ImageIcon(tempArray.get(0).getPath());
+                imageHLabel.setIcon(hImage);
+                imageHFrame.add(textAreas, BorderLayout.LINE_START);
+                imageHFrame.add(imageHLabel, BorderLayout.LINE_END);
+                imageHFrame.pack();
+                imageHFrame.setVisible(true);
+            } else JOptionPane.showMessageDialog(null, "no images found");
         });
-        showLowestDate.addActionListener(hig-> {
-            if (photos.size()>0) {
-            ArrayList<Photo> tempArray = new ArrayList<>(photos);
-            Collections.sort(tempArray, new Comparator<Photo>() {
-                @Override
-                public int compare(Photo o1, Photo o2) {
-                    return o1.getDate().compareTo(o2.getDate());
-                }
-            });
+        showLowestAuthor.addActionListener(hig -> {
+            if (photos.size() > 0) {
+                ArrayList<Photo> tempArray = new ArrayList<>(photos);
+                Collections.sort(tempArray, new Comparator<Photo>() {
+                    @Override
+                    public int compare(Photo o1, Photo o2) {
+                        return o1.getAuthor().compareTo(o2.getAuthor());
+                    }
+                });
 
-            JFrame imageHFrame = new JFrame();
-            imageHFrame.setLayout(new BorderLayout());
-            JLabel imageHLabel = new JLabel();
-            JTextArea authorHig = new JTextArea(tempArray.get(0).getAuthor());
-            JTextArea pathHig = new JTextArea(tempArray.get(0).getPath());
-            JTextArea dateHig = new JTextArea(tempArray.get(0).getDate());
-            JTextArea placeHig = new JTextArea(tempArray.get(0).getPlace());
-            JTextArea tagsHig = new JTextArea(tempArray.get(0).getTags());
-            JPanel textAreas = new JPanel();
-            textAreas.setLayout(new GridLayout(5,1));
-            textAreas.add(pathHig);
-            textAreas.add(dateHig);
-            textAreas.add(authorHig);
-            textAreas.add(placeHig);
-            textAreas.add(tagsHig);
-            pathHig.setEditable(false);
-            dateHig.setEditable(false);
-            tagsHig.setEditable(false);
-            placeHig.setEditable(false);
-            authorHig.setEditable(false);
-            ImageIcon hImage = new ImageIcon(tempArray.get(0).getPath());
-            imageHLabel.setIcon(hImage);
-            imageHFrame.add(textAreas,BorderLayout.LINE_START);
-            imageHFrame.add(imageHLabel, BorderLayout.LINE_END);
-            imageHFrame.pack();
-            imageHFrame.setVisible(true);
-            }else JOptionPane.showMessageDialog(null, "no images found");
+                JFrame imageHFrame = new JFrame();
+                imageHFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+                imageHFrame.setLayout(new BorderLayout());
+                JLabel imageHLabel = new JLabel();
+                JTextArea authorHig = new JTextArea(tempArray.get(0).getAuthor());
+                JTextArea pathHig = new JTextArea(tempArray.get(0).getPath());
+                JTextArea dateHig = new JTextArea(tempArray.get(0).getDate());
+                JTextArea placeHig = new JTextArea(tempArray.get(0).getPlace());
+                JTextArea tagsHig = new JTextArea(tempArray.get(0).getTags());
+                JPanel textAreas = new JPanel();
+                textAreas.setLayout(new GridLayout(5, 1));
+                textAreas.add(pathHig);
+                textAreas.add(dateHig);
+                textAreas.add(authorHig);
+                textAreas.add(placeHig);
+                textAreas.add(tagsHig);
+                pathHig.setEditable(false);
+                dateHig.setEditable(false);
+                tagsHig.setEditable(false);
+                placeHig.setEditable(false);
+                authorHig.setEditable(false);
+                ImageIcon hImage = new ImageIcon(tempArray.get(0).getPath());
+                imageHLabel.setIcon(hImage);
+                imageHFrame.add(textAreas, BorderLayout.LINE_START);
+                imageHFrame.add(imageHLabel, BorderLayout.LINE_END);
+                imageHFrame.pack();
+                imageHFrame.setVisible(true);
+            } else JOptionPane.showMessageDialog(null, "no images found");
         });
-        showLowestPlace.addActionListener(hig-> {
-            if (photos.size()>0) {
-            ArrayList<Photo> tempArray = new ArrayList<>(photos);
-            Collections.sort(tempArray, new Comparator<Photo>() {
-                @Override
-                public int compare(Photo o1, Photo o2) {
-                    return o1.getPlace().compareTo(o2.getPlace());
-                }
-            });
+        showLowestDate.addActionListener(hig -> {
+            if (photos.size() > 0) {
+                ArrayList<Photo> tempArray = new ArrayList<>(photos);
+                Collections.sort(tempArray, new Comparator<Photo>() {
+                    @Override
+                    public int compare(Photo o1, Photo o2) {
+                        return o1.getDate().compareTo(o2.getDate());
+                    }
+                });
 
-            JFrame imageHFrame = new JFrame();
-            imageHFrame.setLayout(new BorderLayout());
-            JLabel imageHLabel = new JLabel();
-            JTextArea authorHig = new JTextArea(tempArray.get(0).getAuthor());
-            JTextArea pathHig = new JTextArea(tempArray.get(0).getPath());
-            JTextArea dateHig = new JTextArea(tempArray.get(0).getDate());
-            JTextArea placeHig = new JTextArea(tempArray.get(0).getPlace());
-            JTextArea tagsHig = new JTextArea(tempArray.get(0).getTags());
-            JPanel textAreas = new JPanel();
-            textAreas.setLayout(new GridLayout(5,1));
-            textAreas.add(pathHig);
-            textAreas.add(dateHig);
-            textAreas.add(authorHig);
-            textAreas.add(placeHig);
-            textAreas.add(tagsHig);
-            pathHig.setEditable(false);
-            dateHig.setEditable(false);
-            tagsHig.setEditable(false);
-            placeHig.setEditable(false);
-            authorHig.setEditable(false);
-            ImageIcon hImage = new ImageIcon(tempArray.get(0).getPath());
-            imageHLabel.setIcon(hImage);
-            imageHFrame.add(textAreas,BorderLayout.LINE_START);
-            imageHFrame.add(imageHLabel, BorderLayout.LINE_END);
-            imageHFrame.pack();
-            imageHFrame.setVisible(true);
-            }else JOptionPane.showMessageDialog(null, "no images found");
+                JFrame imageHFrame = new JFrame();
+                imageHFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+                imageHFrame.setLayout(new BorderLayout());
+                JLabel imageHLabel = new JLabel();
+                JTextArea authorHig = new JTextArea(tempArray.get(0).getAuthor());
+                JTextArea pathHig = new JTextArea(tempArray.get(0).getPath());
+                JTextArea dateHig = new JTextArea(tempArray.get(0).getDate());
+                JTextArea placeHig = new JTextArea(tempArray.get(0).getPlace());
+                JTextArea tagsHig = new JTextArea(tempArray.get(0).getTags());
+                JPanel textAreas = new JPanel();
+                textAreas.setLayout(new GridLayout(5, 1));
+                textAreas.add(pathHig);
+                textAreas.add(dateHig);
+                textAreas.add(authorHig);
+                textAreas.add(placeHig);
+                textAreas.add(tagsHig);
+                pathHig.setEditable(false);
+                dateHig.setEditable(false);
+                tagsHig.setEditable(false);
+                placeHig.setEditable(false);
+                authorHig.setEditable(false);
+                ImageIcon hImage = new ImageIcon(tempArray.get(0).getPath());
+                imageHLabel.setIcon(hImage);
+                imageHFrame.add(textAreas, BorderLayout.LINE_START);
+                imageHFrame.add(imageHLabel, BorderLayout.LINE_END);
+                imageHFrame.pack();
+                imageHFrame.setVisible(true);
+            } else JOptionPane.showMessageDialog(null, "no images found");
+        });
+        showLowestPlace.addActionListener(hig -> {
+            if (photos.size() > 0) {
+                ArrayList<Photo> tempArray = new ArrayList<>(photos);
+                Collections.sort(tempArray, new Comparator<Photo>() {
+                    @Override
+                    public int compare(Photo o1, Photo o2) {
+                        return o1.getPlace().compareTo(o2.getPlace());
+                    }
+                });
+
+                JFrame imageHFrame = new JFrame();
+                imageHFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+                imageHFrame.setLayout(new BorderLayout());
+                JLabel imageHLabel = new JLabel();
+                JTextArea authorHig = new JTextArea(tempArray.get(0).getAuthor());
+                JTextArea pathHig = new JTextArea(tempArray.get(0).getPath());
+                JTextArea dateHig = new JTextArea(tempArray.get(0).getDate());
+                JTextArea placeHig = new JTextArea(tempArray.get(0).getPlace());
+                JTextArea tagsHig = new JTextArea(tempArray.get(0).getTags());
+                JPanel textAreas = new JPanel();
+                textAreas.setLayout(new GridLayout(5, 1));
+                textAreas.add(pathHig);
+                textAreas.add(dateHig);
+                textAreas.add(authorHig);
+                textAreas.add(placeHig);
+                textAreas.add(tagsHig);
+                pathHig.setEditable(false);
+                dateHig.setEditable(false);
+                tagsHig.setEditable(false);
+                placeHig.setEditable(false);
+                authorHig.setEditable(false);
+                ImageIcon hImage = new ImageIcon(tempArray.get(0).getPath());
+                imageHLabel.setIcon(hImage);
+                imageHFrame.add(textAreas, BorderLayout.LINE_START);
+                imageHFrame.add(imageHLabel, BorderLayout.LINE_END);
+                imageHFrame.pack();
+                imageHFrame.setVisible(true);
+            } else JOptionPane.showMessageDialog(null, "no images found");
         });
         //displaying images with chosen tag
-        choosenTag.addActionListener(chos->{
+        choosenTag.addActionListener(chos -> {
             JFrame tagChooseFrame = new JFrame();
+            tagChooseFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
             JTextField tagTArea = new JTextField();
             JButton searchTag = new JButton("searchTag");
             tagTArea.setAutoscrolls(true);
             tagChooseFrame.setLayout(new BorderLayout());
             tagChooseFrame.add(tagTArea, BorderLayout.CENTER);
-            tagChooseFrame.add(searchTag,BorderLayout.LINE_END);
-            tagChooseFrame.setSize(300,100);
+            tagChooseFrame.add(searchTag, BorderLayout.LINE_END);
+            tagChooseFrame.setSize(300, 100);
             tagChooseFrame.setVisible(true);
-            searchTag.addActionListener(search->{
+            searchTag.addActionListener(search -> {
                 System.out.println(tagTArea.getText());
 
-            JFrame filteredImagesFrame = new JFrame();
-            JPanel filteredImagesPanel = new JPanel();
-            ArrayList<Photo> filteredPhotos = new ArrayList<>();
+                JFrame filteredImagesFrame = new JFrame();
+                filteredImagesFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+                JPanel filteredImagesPanel = new JPanel();
+                ArrayList<Photo> filteredPhotos = new ArrayList<>();
                 Pattern tagCheck = Pattern.compile(tagTArea.getText());
-            for(Photo photoInLoop:photos){
-                for (String tagInLoop:photoInLoop.getTagsSplit()){
-                    Matcher tagsMatcher = tagCheck.matcher(tagInLoop.toString());
-                    if (tagsMatcher.find()){
-                        filteredPhotos.add(photoInLoop);
+                for (Photo photoInLoop : photos) {
+                if(!photoInLoop.getTags().isEmpty()) {
+                    for (String tagInLoop : photoInLoop.getTagsSplit()) {
+                        Matcher tagsMatcher = tagCheck.matcher(tagInLoop);
+                        // System.out.println(tagInLoop.toString()+" "+tagsMatcher.find()+" ################# "+filteredPhotos.size()+" "+" "+tagTArea.getText());
+                        if (tagsMatcher.matches()) {
+                            filteredPhotos.add(photoInLoop);
+                            //  System.out.println("ADDED"+photoInLoop.getTags());
+                        }
                     }
                 }
-            }
-                System.out.println("size of filteredPhotos is "+filteredPhotos.size());
-            if (filteredPhotos.size()>0){
-                for (int i = 0;i< filteredPhotos.size();i++){
-                    JButton[] tabFiltered = new JButton[filteredPhotos.size()];
-                    tabFiltered[i] = new JButton();
-                    ImageIcon img = new ImageIcon(filteredPhotos.get(i).getPath());
-                    Image scaleImage = img.getImage().getScaledInstance(winDim10.width - 50, 100, Image.SCALE_DEFAULT);
-                    tabFiltered[i].setIcon(new ImageIcon(scaleImage));
-                    filteredImagesPanel.add(tabFiltered[i]);
-                    filteredImagesPanel.setLayout(new GridLayout());
-                    int m = i;
-                    tabFiltered[i].addActionListener(a -> {
-                        ImageIcon clickedimage = new ImageIcon(filteredPhotos.get(m).getPath());
-                        Image scaleclicked = clickedimage.getImage().getScaledInstance(winDim2.width, winDim2.height, Image.SCALE_DEFAULT);
-                        author.setText(filteredPhotos.get(m).getAuthor());
-                        tags.setText(filteredPhotos.get(m).getTags());
-                        place.setText(filteredPhotos.get(m).getPlace());
-                        date.setText(filteredPhotos.get(m).getDate());
-                        centerlabel.setIcon(new ImageIcon(scaleclicked));
-                        centerpanel.revalidate();
-                        centerpanel.repaint();
-                        filteredImagesFrame.setVisible(false);
-
-                    });
                 }
+                System.out.println("size of filteredPhotos is " + filteredPhotos.size());
+                if (filteredPhotos.size() > 0) {
+                    for (int i = 0; i < filteredPhotos.size(); i++) {
+                        JButton[] tabFiltered = new JButton[filteredPhotos.size()];
+                        tabFiltered[i] = new JButton();
+                        ImageIcon img = new ImageIcon(filteredPhotos.get(i).getPath());
+                        Image scaleImage = img.getImage().getScaledInstance(winDim10.width - 50, 100, Image.SCALE_DEFAULT);
+                        tabFiltered[i].setIcon(new ImageIcon(scaleImage));
+                        filteredImagesPanel.add(tabFiltered[i]);
+                        filteredImagesPanel.setLayout(new GridLayout());
+                        int m = i;
+                        tabFiltered[i].addActionListener(a -> {
+                            ImageIcon clickedimage = new ImageIcon(filteredPhotos.get(m).getPath());
+                            Image scaleclicked = clickedimage.getImage().getScaledInstance(winDim2.width, winDim2.height, Image.SCALE_DEFAULT);
+                            author.setText(filteredPhotos.get(m).getAuthor());
+                            tags.setText(filteredPhotos.get(m).getTags());
+                            place.setText(filteredPhotos.get(m).getPlace());
+                            date.setText(filteredPhotos.get(m).getDate());
+                            centerlabel.setIcon(new ImageIcon(scaleclicked));
+                            centerpanel.revalidate();
+                            centerpanel.repaint();
+                            filteredImagesFrame.setVisible(false);
 
-                filteredImagesFrame.setLayout(new GridLayout());
-                filteredImagesFrame.add(filteredImagesPanel);
-                filteredImagesFrame.pack();
-                filteredImagesFrame.setVisible(true);
-            } else JOptionPane.showMessageDialog(null, "no photos found");
+                        });
+                    }
+
+                    filteredImagesFrame.setLayout(new GridLayout());
+                    filteredImagesFrame.add(filteredImagesPanel);
+                    filteredImagesFrame.pack();
+                    filteredImagesFrame.setVisible(true);
+                } else JOptionPane.showMessageDialog(null, "no photos found");
+
+            });
+        });
+        choosenDate.addActionListener(chos -> {
+            JFrame tagChooseFrame = new JFrame();
+            tagChooseFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+            JTextField tagTArea = new JTextField();
+            JButton searchTag = new JButton("searchTag");
+            tagTArea.setAutoscrolls(true);
+            tagChooseFrame.setLayout(new BorderLayout());
+            tagChooseFrame.add(tagTArea, BorderLayout.CENTER);
+            tagChooseFrame.add(searchTag, BorderLayout.LINE_END);
+            tagChooseFrame.setSize(300, 100);
+            tagChooseFrame.setVisible(true);
+            searchTag.addActionListener(search -> {
+                System.out.println(tagTArea.getText());
+                if (isApropriateDate(tagTArea)) {
+                    JFrame filteredImagesFrame = new JFrame();
+                    filteredImagesFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+                    JPanel filteredImagesPanel = new JPanel();
+                    ArrayList<Photo> filteredPhotos = new ArrayList<>();
+                    Pattern tagCheck = Pattern.compile(tagTArea.getText());
+                    for (Photo photoInLoop : photos) {
+                        if (!photoInLoop.getTags().isEmpty()) {
+
+                                Matcher tagsMatcher = tagCheck.matcher(photoInLoop.getDate());
+                                // System.out.println(tagInLoop.toString()+" "+tagsMatcher.find()+" ################# "+filteredPhotos.size()+" "+" "+tagTArea.getText());
+                                if (tagsMatcher.matches()) {
+                                    filteredPhotos.add(photoInLoop);
+                                    //  System.out.println("ADDED"+photoInLoop.getTags());
+                                }
+
+                        }
+                    }
+                    System.out.println("size of filteredPhotos is " + filteredPhotos.size());
+                    if (filteredPhotos.size() > 0) {
+                        for (int i = 0; i < filteredPhotos.size(); i++) {
+                            JButton[] tabFiltered = new JButton[filteredPhotos.size()];
+                            tabFiltered[i] = new JButton();
+                            ImageIcon img = new ImageIcon(filteredPhotos.get(i).getPath());
+                            Image scaleImage = img.getImage().getScaledInstance(winDim10.width - 50, 100, Image.SCALE_DEFAULT);
+                            tabFiltered[i].setIcon(new ImageIcon(scaleImage));
+                            filteredImagesPanel.add(tabFiltered[i]);
+                            filteredImagesPanel.setLayout(new GridLayout());
+                            int m = i;
+                            tabFiltered[i].addActionListener(a -> {
+                                ImageIcon clickedimage = new ImageIcon(filteredPhotos.get(m).getPath());
+                                Image scaleclicked = clickedimage.getImage().getScaledInstance(winDim2.width, winDim2.height, Image.SCALE_DEFAULT);
+                                author.setText(filteredPhotos.get(m).getAuthor());
+                                tags.setText(filteredPhotos.get(m).getTags());
+                                place.setText(filteredPhotos.get(m).getPlace());
+                                date.setText(filteredPhotos.get(m).getDate());
+                                centerlabel.setIcon(new ImageIcon(scaleclicked));
+                                centerpanel.revalidate();
+                                centerpanel.repaint();
+                                filteredImagesFrame.setVisible(false);
+
+                            });
+                        }
+
+                        filteredImagesFrame.setLayout(new GridLayout());
+                        filteredImagesFrame.add(filteredImagesPanel);
+                        filteredImagesFrame.pack();
+                        filteredImagesFrame.setVisible(true);
+                    } else JOptionPane.showMessageDialog(null, "no photos found");
+                } else JOptionPane.showMessageDialog(null, "please enter apropriate date");
+            });
+        });
+        choosenAuthor.addActionListener(chos -> {
+            JFrame tagChooseFrame = new JFrame();
+            tagChooseFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+            JTextField tagTArea = new JTextField();
+            JButton searchTag = new JButton("searchTag");
+            tagTArea.setAutoscrolls(true);
+            tagChooseFrame.setLayout(new BorderLayout());
+            tagChooseFrame.add(tagTArea, BorderLayout.CENTER);
+            tagChooseFrame.add(searchTag, BorderLayout.LINE_END);
+            tagChooseFrame.setSize(300, 100);
+            tagChooseFrame.setVisible(true);
+            searchTag.addActionListener(search -> {
+                System.out.println(tagTArea.getText());
+
+                    JFrame filteredImagesFrame = new JFrame();
+                    filteredImagesFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+                    JPanel filteredImagesPanel = new JPanel();
+                    ArrayList<Photo> filteredPhotos = new ArrayList<>();
+                    Pattern tagCheck = Pattern.compile(tagTArea.getText());
+                    for (Photo photoInLoop : photos) {
+                        if (!photoInLoop.getTags().isEmpty()) {
+
+                            Matcher tagsMatcher = tagCheck.matcher(photoInLoop.getAuthor());
+                            // System.out.println(tagInLoop.toString()+" "+tagsMatcher.find()+" ################# "+filteredPhotos.size()+" "+" "+tagTArea.getText());
+                            if (tagsMatcher.matches()) {
+                                filteredPhotos.add(photoInLoop);
+                                //  System.out.println("ADDED"+photoInLoop.getTags());
+                            }
+
+                        }
+                    }
+                    System.out.println("size of filteredPhotos is " + filteredPhotos.size());
+                    if (filteredPhotos.size() > 0) {
+                        for (int i = 0; i < filteredPhotos.size(); i++) {
+                            JButton[] tabFiltered = new JButton[filteredPhotos.size()];
+                            tabFiltered[i] = new JButton();
+                            ImageIcon img = new ImageIcon(filteredPhotos.get(i).getPath());
+                            Image scaleImage = img.getImage().getScaledInstance(winDim10.width - 50, 100, Image.SCALE_DEFAULT);
+                            tabFiltered[i].setIcon(new ImageIcon(scaleImage));
+                            filteredImagesPanel.add(tabFiltered[i]);
+                            filteredImagesPanel.setLayout(new GridLayout());
+                            int m = i;
+                            tabFiltered[i].addActionListener(a -> {
+                                ImageIcon clickedimage = new ImageIcon(filteredPhotos.get(m).getPath());
+                                Image scaleclicked = clickedimage.getImage().getScaledInstance(winDim2.width, winDim2.height, Image.SCALE_DEFAULT);
+                                author.setText(filteredPhotos.get(m).getAuthor());
+                                tags.setText(filteredPhotos.get(m).getTags());
+                                place.setText(filteredPhotos.get(m).getPlace());
+                                date.setText(filteredPhotos.get(m).getDate());
+                                centerlabel.setIcon(new ImageIcon(scaleclicked));
+                                centerpanel.revalidate();
+                                centerpanel.repaint();
+                                filteredImagesFrame.setVisible(false);
+
+                            });
+                        }
+
+                        filteredImagesFrame.setLayout(new GridLayout());
+                        filteredImagesFrame.add(filteredImagesPanel);
+                        filteredImagesFrame.pack();
+                        filteredImagesFrame.setVisible(true);
+                    } else JOptionPane.showMessageDialog(null, "no photos found");
+
+            });
+        });
+        choosenPlace.addActionListener(chos -> {
+            JFrame tagChooseFrame = new JFrame();
+            tagChooseFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+            JTextField tagTArea = new JTextField();
+            JButton searchTag = new JButton("searchTag");
+            tagTArea.setAutoscrolls(true);
+            tagChooseFrame.setLayout(new BorderLayout());
+            tagChooseFrame.add(tagTArea, BorderLayout.CENTER);
+            tagChooseFrame.add(searchTag, BorderLayout.LINE_END);
+            tagChooseFrame.setSize(300, 100);
+            tagChooseFrame.setVisible(true);
+            searchTag.addActionListener(search -> {
+                System.out.println(tagTArea.getText());
+
+                JFrame filteredImagesFrame = new JFrame();
+                filteredImagesFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+                JPanel filteredImagesPanel = new JPanel();
+                ArrayList<Photo> filteredPhotos = new ArrayList<>();
+                Pattern tagCheck = Pattern.compile(tagTArea.getText());
+                for (Photo photoInLoop : photos) {
+                    if (!photoInLoop.getTags().isEmpty()) {
+
+                        Matcher tagsMatcher = tagCheck.matcher(photoInLoop.getPlace());
+                        // System.out.println(tagInLoop.toString()+" "+tagsMatcher.find()+" ################# "+filteredPhotos.size()+" "+" "+tagTArea.getText());
+                        if (tagsMatcher.matches()) {
+                            filteredPhotos.add(photoInLoop);
+                            //  System.out.println("ADDED"+photoInLoop.getTags());
+                        }
+
+                    }
+                }
+                System.out.println("size of filteredPhotos is " + filteredPhotos.size());
+                if (filteredPhotos.size() > 0) {
+                    for (int i = 0; i < filteredPhotos.size(); i++) {
+                        JButton[] tabFiltered = new JButton[filteredPhotos.size()];
+                        tabFiltered[i] = new JButton();
+                        ImageIcon img = new ImageIcon(filteredPhotos.get(i).getPath());
+                        Image scaleImage = img.getImage().getScaledInstance(winDim10.width - 50, 100, Image.SCALE_DEFAULT);
+                        tabFiltered[i].setIcon(new ImageIcon(scaleImage));
+                        filteredImagesPanel.add(tabFiltered[i]);
+                        filteredImagesPanel.setLayout(new GridLayout());
+                        int m = i;
+                        tabFiltered[i].addActionListener(a -> {
+                            ImageIcon clickedimage = new ImageIcon(filteredPhotos.get(m).getPath());
+                            Image scaleclicked = clickedimage.getImage().getScaledInstance(winDim2.width, winDim2.height, Image.SCALE_DEFAULT);
+                            author.setText(filteredPhotos.get(m).getAuthor());
+                            tags.setText(filteredPhotos.get(m).getTags());
+                            place.setText(filteredPhotos.get(m).getPlace());
+                            date.setText(filteredPhotos.get(m).getDate());
+                            centerlabel.setIcon(new ImageIcon(scaleclicked));
+                            centerpanel.revalidate();
+                            centerpanel.repaint();
+                            filteredImagesFrame.setVisible(false);
+
+                        });
+                    }
+
+                    filteredImagesFrame.setLayout(new GridLayout());
+                    filteredImagesFrame.add(filteredImagesPanel);
+                    filteredImagesFrame.pack();
+                    filteredImagesFrame.setVisible(true);
+                } else JOptionPane.showMessageDialog(null, "no photos found");
 
             });
         });
         //search by date
-        dateSearch.addActionListener(search->{
+        dateSearch.addActionListener(search -> {
             JFrame dateSearchFrame = new JFrame();
+            dateSearchFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
             JTextArea dateArea = new JTextArea();
             JButton greaterThan = new JButton("Greater Than");
             JButton lessThan = new JButton("Lesser Than");
             JPanel buttonsPanel = new JPanel();
-            buttonsPanel.setLayout(new GridLayout(2,1));
+            buttonsPanel.setLayout(new GridLayout(2, 1));
             buttonsPanel.add(greaterThan);
             buttonsPanel.add(lessThan);
             dateSearchFrame.setLayout(new BorderLayout());
-            dateSearchFrame.add(dateArea,BorderLayout.CENTER);
-            dateSearchFrame.add(buttonsPanel,BorderLayout.LINE_END);
-            dateSearchFrame.setSize(300,100);
+            dateSearchFrame.add(dateArea, BorderLayout.CENTER);
+            dateSearchFrame.add(buttonsPanel, BorderLayout.LINE_END);
+            dateSearchFrame.setSize(300, 100);
             dateSearchFrame.setVisible(true);
-            greaterThan.addActionListener(great->{
+            greaterThan.addActionListener(great -> {
                 ArrayList<Photo> filteredByDate = new ArrayList<>();
-                if (isApropriateDate(dateArea)){
+                if (isApropriateDate(dateArea)) {
                     String[] dateDivided = dateArea.getText().split("-");
-                    for(Photo iter:photos){
+                    for (Photo iter : photos) {
                         String[] tempDateArr = iter.getDate().split("-");
-                       if( isLesserDate(dateDivided,tempDateArr)){
-                           filteredByDate.add(iter);
-                       }
-                    }
-             } else JOptionPane.showMessageDialog(null, "incorrect date");
-            if (filteredByDate.size()>0){
-                dateSearchFrame.setVisible(false);
-                JFrame filteredByDateFrame = new JFrame();
-                JPanel filteredByDatePanel = new JPanel();
-                for (int i = 0;i< filteredByDate.size();i++){
-                    JButton[] tabFiltered = new JButton[filteredByDate.size()];
-                    tabFiltered[i] = new JButton();
-                    ImageIcon img = new ImageIcon(filteredByDate.get(i).getPath());
-                    Image scaleImage = img.getImage().getScaledInstance(winDim10.width - 50, 100, Image.SCALE_DEFAULT);
-                    tabFiltered[i].setIcon(new ImageIcon(scaleImage));
-                    filteredByDatePanel.add(tabFiltered[i]);
-                    filteredByDatePanel.setLayout(new GridLayout());
-                    int m = i;
-                    tabFiltered[i].addActionListener(a -> {
-                        ImageIcon clickedimage = new ImageIcon(filteredByDate.get(m).getPath());
-                        Image scaleclicked = clickedimage.getImage().getScaledInstance(winDim2.width, winDim2.height, Image.SCALE_DEFAULT);
-                        author.setText(filteredByDate.get(m).getAuthor());
-                        tags.setText(filteredByDate.get(m).getTags());
-                        place.setText(filteredByDate.get(m).getPlace());
-                        date.setText(filteredByDate.get(m).getDate());
-                        centerlabel.setIcon(new ImageIcon(scaleclicked));
-                        centerpanel.revalidate();
-                        centerpanel.repaint();
-                        filteredByDateFrame.setVisible(false);
-
-                    });
-                }
-                filteredByDateFrame.setLayout(new GridLayout());
-                filteredByDateFrame.add(filteredByDatePanel);
-                filteredByDateFrame.pack();
-                filteredByDateFrame.setVisible(true);
-            }
-            if(filteredByDate.size()==0){
-                JOptionPane.showMessageDialog(null, "no photos found");
-            }
-            });
-            lessThan.addActionListener(great->{
-                ArrayList<Photo> filteredByDate = new ArrayList<>();
-                if (isApropriateDate(dateArea)){
-                    String[] dateDivided = dateArea.getText().split("-");
-                    for(Photo iter:photos){
-                        String[] tempDateArr = iter.getDate().split("-");
-                        if(isGreaterDate(dateDivided,tempDateArr)){
+                        if (isGreaterDate(dateDivided, tempDateArr)) {
                             filteredByDate.add(iter);
                         }
                     }
                 } else JOptionPane.showMessageDialog(null, "incorrect date");
-                if (filteredByDate.size()>0){
+                if (filteredByDate.size() > 0) {
                     dateSearchFrame.setVisible(false);
                     JFrame filteredByDateFrame = new JFrame();
+                    filteredByDateFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
                     JPanel filteredByDatePanel = new JPanel();
-                    for (int i = 0;i< filteredByDate.size();i++){
+                    for (int i = 0; i < filteredByDate.size(); i++) {
                         JButton[] tabFiltered = new JButton[filteredByDate.size()];
                         tabFiltered[i] = new JButton();
                         ImageIcon img = new ImageIcon(filteredByDate.get(i).getPath());
@@ -731,26 +914,74 @@ public class projekt_gui_main {
                     filteredByDateFrame.pack();
                     filteredByDateFrame.setVisible(true);
                 }
-                if(filteredByDate.size()==0){
+                if (filteredByDate.size() == 0) {
+                    JOptionPane.showMessageDialog(null, "no photos found");
+                }
+            });
+            lessThan.addActionListener(great -> {
+                ArrayList<Photo> filteredByDate = new ArrayList<>();
+                if (isApropriateDate(dateArea)) {
+                    String[] dateDivided = dateArea.getText().split("-");
+                    for (Photo iter : photos) {
+                        String[] tempDateArr = iter.getDate().split("-");
+                        if (isLesserDate(dateDivided, tempDateArr)) {
+                            filteredByDate.add(iter);
+                        }
+                    }
+                } else JOptionPane.showMessageDialog(null, "incorrect date");
+                if (filteredByDate.size() > 0) {
+                    dateSearchFrame.setVisible(false);
+                    JFrame filteredByDateFrame = new JFrame();
+                    filteredByDateFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+                    JPanel filteredByDatePanel = new JPanel();
+                    for (int i = 0; i < filteredByDate.size(); i++) {
+                        JButton[] tabFiltered = new JButton[filteredByDate.size()];
+                        tabFiltered[i] = new JButton();
+                        ImageIcon img = new ImageIcon(filteredByDate.get(i).getPath());
+                        Image scaleImage = img.getImage().getScaledInstance(winDim10.width - 50, 100, Image.SCALE_DEFAULT);
+                        tabFiltered[i].setIcon(new ImageIcon(scaleImage));
+                        filteredByDatePanel.add(tabFiltered[i]);
+                        filteredByDatePanel.setLayout(new GridLayout());
+                        int m = i;
+                        tabFiltered[i].addActionListener(a -> {
+                            ImageIcon clickedimage = new ImageIcon(filteredByDate.get(m).getPath());
+                            Image scaleclicked = clickedimage.getImage().getScaledInstance(winDim2.width, winDim2.height, Image.SCALE_DEFAULT);
+                            author.setText(filteredByDate.get(m).getAuthor());
+                            tags.setText(filteredByDate.get(m).getTags());
+                            place.setText(filteredByDate.get(m).getPlace());
+                            date.setText(filteredByDate.get(m).getDate());
+                            centerlabel.setIcon(new ImageIcon(scaleclicked));
+                            centerpanel.revalidate();
+                            centerpanel.repaint();
+                            filteredByDateFrame.setVisible(false);
+
+                        });
+                    }
+                    filteredByDateFrame.setLayout(new GridLayout());
+                    filteredByDateFrame.add(filteredByDatePanel);
+                    filteredByDateFrame.pack();
+                    filteredByDateFrame.setVisible(true);
+                }
+                if (filteredByDate.size() == 0) {
                     JOptionPane.showMessageDialog(null, "no photos found");
                 }
             });
         });
         //save to chosen file
-        saveDatabase.addActionListener(sData->{
+        saveDatabase.addActionListener(sData -> {
             int code = fileChooser.showOpenDialog(mainFrame);
             if (code == JFileChooser.APPROVE_OPTION) {
                 String path = fileChooser.getSelectedFile().getPath();
                 Pattern checkdatabase = Pattern.compile(".*\\.txt\\b");
                 Matcher matchdatabase = checkdatabase.matcher(path);
-                if(matchdatabase.find()){
+                if (matchdatabase.find()) {
                     try {
                         FileWriter databaseWriter = new FileWriter(path);
-                        if (photos.size()>0){
-                            for(Photo iter:photos){
-                                databaseWriter.write(iter.getPath()+";"+iter.getTags()+";"+iter.getDate()+";"+iter.getAuthor()+";"+iter.getPlace()+";"+"\r\n");
+                        if (photos.size() > 0) {
+                            for (Photo iter : photos) {
+                                databaseWriter.write(iter.getPath() + ";" + iter.getTags() + ";" + iter.getDate() + ";" + iter.getAuthor() + ";" + iter.getPlace() + ";" + "\r\n");
 
-                                System.out.println("zapisano "+iter.getPath());
+                                System.out.println("zapisano " + iter.getPath());
                             }
                             databaseWriter.close();
                         }
@@ -758,7 +989,7 @@ public class projekt_gui_main {
                         e.printStackTrace();
                         System.out.println("exception z zapisu bazy");
                     }
-                }else JOptionPane.showMessageDialog(null, "please select .txt file");
+                } else JOptionPane.showMessageDialog(null, "please select .txt file");
             }
         });
 
@@ -811,6 +1042,11 @@ public class projekt_gui_main {
         showItemWith.add(showLowestDate);
         showItemWith.add(showLowestPlace);
 
+        JMenu searchBy = new JMenu("Search By");
+        searchBy.add(choosenTag);
+        searchBy.add(choosenDate);
+        searchBy.add(choosenAuthor);
+        searchBy.add(choosenPlace);
 
 
         JMenuBar menuBar = new JMenuBar();
@@ -820,7 +1056,7 @@ public class projekt_gui_main {
         menuBar.add(deleteimage);
         menuBar.add(editImage);
         menuBar.add(showItemWith);
-        menuBar.add(choosenTag);
+        menuBar.add(searchBy);
         menuBar.add(dateSearch);
 
         mainFrame.setJMenuBar(menuBar);
@@ -871,45 +1107,81 @@ public class projekt_gui_main {
         } else return false;
 
     }
-    public static Boolean isGreaterDate (String[] arrayFromTextArea,String[] arrayFromList){
-       if(Integer.valueOf(arrayFromTextArea[2])<Integer.valueOf(arrayFromList[2])){ return true; }
 
-       if (Integer.valueOf(arrayFromTextArea[2])==Integer.valueOf(arrayFromList[2])){
-       }else if (Integer.valueOf(arrayFromTextArea[1])<Integer.valueOf(arrayFromList[1])){ return true;}
+    public static Boolean isApropriateDate(JTextField date) {
+        System.out.println("uzyto metody 2");
+        String dat = date.getText();
+        Pattern datepat = Pattern.compile("([12]?[0-9]|[3][01])-([0]?[0-9]|[1][012])-([0-9]{4})");
+        Matcher datematch = datepat.matcher(dat);
+        if (datematch.find()) {
+            return true;
+        } else return false;
 
-       if(Integer.valueOf(arrayFromTextArea[2])==Integer.valueOf(arrayFromList[2])){
-       }else if (Integer.valueOf(arrayFromTextArea[1])==Integer.valueOf(arrayFromList[1])){
-       } else if (Integer.valueOf(arrayFromTextArea[0])<Integer.valueOf(arrayFromList[0])){return true;}
+    }
+    public static Boolean isGreaterDate(String[] arrayFromTextArea, String[] arrayFromList) {
+        if (Integer.valueOf(arrayFromTextArea[2]) < Integer.valueOf(arrayFromList[2])) {
+            return true;
+        }
 
-        if(Integer.valueOf(arrayFromTextArea[2])>Integer.valueOf(arrayFromList[2])){ return false; }
+        if (Integer.valueOf(arrayFromTextArea[2]) == Integer.valueOf(arrayFromList[2])) {
+        } else if (Integer.valueOf(arrayFromTextArea[1]) < Integer.valueOf(arrayFromList[1])) {
+            return true;
+        }
 
-        if (Integer.valueOf(arrayFromTextArea[2])==Integer.valueOf(arrayFromList[2])){
-        }else if (Integer.valueOf(arrayFromTextArea[1])>Integer.valueOf(arrayFromList[1])){ return false;}
+        if (Integer.valueOf(arrayFromTextArea[2]) == Integer.valueOf(arrayFromList[2])) {
+        } else if (Integer.valueOf(arrayFromTextArea[1]) == Integer.valueOf(arrayFromList[1])) {
+        } else if (Integer.valueOf(arrayFromTextArea[0]) < Integer.valueOf(arrayFromList[0])) {
+            return true;
+        }
 
-        if(Integer.valueOf(arrayFromTextArea[2])==Integer.valueOf(arrayFromList[2])){
-        }else if (Integer.valueOf(arrayFromTextArea[1])==Integer.valueOf(arrayFromList[1])){
-        } else if (Integer.valueOf(arrayFromTextArea[0])>Integer.valueOf(arrayFromList[0])){return false;}
+        if (Integer.valueOf(arrayFromTextArea[2]) > Integer.valueOf(arrayFromList[2])) {
+            return false;
+        }
+
+        if (Integer.valueOf(arrayFromTextArea[2]) == Integer.valueOf(arrayFromList[2])) {
+        } else if (Integer.valueOf(arrayFromTextArea[1]) > Integer.valueOf(arrayFromList[1])) {
+            return false;
+        }
+
+        if (Integer.valueOf(arrayFromTextArea[2]) == Integer.valueOf(arrayFromList[2])) {
+        } else if (Integer.valueOf(arrayFromTextArea[1]) == Integer.valueOf(arrayFromList[1])) {
+        } else if (Integer.valueOf(arrayFromTextArea[0]) > Integer.valueOf(arrayFromList[0])) {
+            return false;
+        }
         System.out.println("something went wring in date comparison");
         return true;
     }
-    public static Boolean isLesserDate (String[] arrayFromTextArea,String[] arrayFromList){
-        if(Integer.valueOf(arrayFromTextArea[2])<Integer.valueOf(arrayFromList[2])){ return false; }
 
-        if (Integer.valueOf(arrayFromTextArea[2])==Integer.valueOf(arrayFromList[2])){
-        }else if (Integer.valueOf(arrayFromTextArea[1])<Integer.valueOf(arrayFromList[1])){ return false;}
+    public static Boolean isLesserDate(String[] arrayFromTextArea, String[] arrayFromList) {
+        if (Integer.valueOf(arrayFromTextArea[2]) < Integer.valueOf(arrayFromList[2])) {
+            return false;
+        }
 
-        if(Integer.valueOf(arrayFromTextArea[2])==Integer.valueOf(arrayFromList[2])){
-        }else if (Integer.valueOf(arrayFromTextArea[1])==Integer.valueOf(arrayFromList[1])){
-        } else if (Integer.valueOf(arrayFromTextArea[0])<Integer.valueOf(arrayFromList[0])){return false;}
+        if (Integer.valueOf(arrayFromTextArea[2]) == Integer.valueOf(arrayFromList[2])) {
+        } else if (Integer.valueOf(arrayFromTextArea[1]) < Integer.valueOf(arrayFromList[1])) {
+            return false;
+        }
 
-        if(Integer.valueOf(arrayFromTextArea[2])>Integer.valueOf(arrayFromList[2])){ return true; }
+        if (Integer.valueOf(arrayFromTextArea[2]) == Integer.valueOf(arrayFromList[2])) {
+        } else if (Integer.valueOf(arrayFromTextArea[1]) == Integer.valueOf(arrayFromList[1])) {
+        } else if (Integer.valueOf(arrayFromTextArea[0]) < Integer.valueOf(arrayFromList[0])) {
+            return false;
+        }
 
-        if (Integer.valueOf(arrayFromTextArea[2])==Integer.valueOf(arrayFromList[2])){
-        }else if (Integer.valueOf(arrayFromTextArea[1])>Integer.valueOf(arrayFromList[1])){ return true;}
+        if (Integer.valueOf(arrayFromTextArea[2]) > Integer.valueOf(arrayFromList[2])) {
+            return true;
+        }
 
-        if(Integer.valueOf(arrayFromTextArea[2])==Integer.valueOf(arrayFromList[2])){
-        }else if (Integer.valueOf(arrayFromTextArea[1])==Integer.valueOf(arrayFromList[1])){
-        } else if (Integer.valueOf(arrayFromTextArea[0])>Integer.valueOf(arrayFromList[0])){return true;}
+        if (Integer.valueOf(arrayFromTextArea[2]) == Integer.valueOf(arrayFromList[2])) {
+        } else if (Integer.valueOf(arrayFromTextArea[1]) > Integer.valueOf(arrayFromList[1])) {
+            return true;
+        }
+
+        if (Integer.valueOf(arrayFromTextArea[2]) == Integer.valueOf(arrayFromList[2])) {
+        } else if (Integer.valueOf(arrayFromTextArea[1]) == Integer.valueOf(arrayFromList[1])) {
+        } else if (Integer.valueOf(arrayFromTextArea[0]) > Integer.valueOf(arrayFromList[0])) {
+            return true;
+        }
         System.out.println("something went wring in date comparison");
         return true;
     }

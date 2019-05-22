@@ -13,6 +13,10 @@ public class Photo {
         return tagsSplit;
     }
 
+    public void setTagsSplit(String[] tagsSplit) {
+        this.tagsSplit = tagsSplit;
+    }
+
     String[] tagsSplit;
 
     public void setPath(String path) {
@@ -70,11 +74,25 @@ public class Photo {
 
         if (regexMatcher.find()) {
             this.path = divided[0];
-            this.tags = divided[1];
-            this.date = divided[2];
-            this.author = divided[3];
-            this.place = divided[4];
-            this.tagsSplit = divided[1].split(",");
+            if(!divided[1].isEmpty()) {
+                this.tags = divided[1];
+                System.out.println("not null");
+            } else this.tags= "No Data";
+            if(!divided[2].isEmpty()) {
+                System.out.println("not null");
+                this.date = divided[2];
+            }else this.date = "No Data" ;
+            if(!divided[3].isEmpty()) {
+                System.out.println("not null");
+                this.author = divided[3];
+            } else this.author ="No Data";
+            if(!divided[4].isEmpty()) {
+                System.out.println("not null");
+                this.place = divided[4];
+            } else this.place = "No Data";
+
+                this.tagsSplit = divided[1].split(",");
+
 
         }
         else {
