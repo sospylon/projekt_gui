@@ -969,7 +969,7 @@ public class projekt_gui_main {
         });
         //save to chosen file
         saveDatabase.addActionListener(sData -> {
-            int code = fileChooser.showOpenDialog(mainFrame);
+            int code = fileChooser.showSaveDialog(mainFrame);
             if (code == JFileChooser.APPROVE_OPTION) {
                 String path = fileChooser.getSelectedFile().getPath();
                 Pattern checkdatabase = Pattern.compile(".*\\.txt\\b");
